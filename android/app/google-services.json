@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "54359995812",
+    "project_id": "portalempleado-409c0",
+    "storage_bucket": "portalempleado-409c0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54359995812:android:5290862560114dbffd7d31",
+        "android_client_info": {
+          "package_name": "com.portalempleado"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54359995812-hf02ua37k54p43dhfe51kuv3g8s68cog.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmu2PwUWX7bH5RJ4tjlg7Ttf1Zvj97Whc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54359995812-hf02ua37k54p43dhfe51kuv3g8s68cog.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54359995812:android:18cf4883ce321ec7fd7d31",
+        "android_client_info": {
+          "package_name": "com.portalempleado.portalempleado"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54359995812-hf02ua37k54p43dhfe51kuv3g8s68cog.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmu2PwUWX7bH5RJ4tjlg7Ttf1Zvj97Whc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54359995812-hf02ua37k54p43dhfe51kuv3g8s68cog.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
