@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/intl.dart'; // Paquete para formatear fechas
 import 'package:portalempleado/InfoCalendario.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -104,8 +103,8 @@ class _CalendarPageState extends State<CalendarPage> {
       calendarFormat: _calendarFormat,
       focusedDay: _focusedDay,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-      onDaySelected: _onDaySelected,
-      eventLoader: (day) => _events[day],
+      //onDaySelected: _onDaySelected,
+     // eventLoader: (day) => _events[day],
       holidayPredicate: (day) => _holidays.containsKey(day),
       firstDay: DateTime.utc(2023, 1, 1),
       lastDay: DateTime.utc(2023, 12, 31),

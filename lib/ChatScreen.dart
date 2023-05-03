@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
+
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -19,7 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       _userId = user.uid;
-      _userName = user.displayName;
+      _userName = user.displayName!;
     }
   }
 
@@ -44,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   );
                 }
 
-                final messages = snapshot.data.docs.reversed;
+                final messages = snapshot.data!.docs.reversed;
 
                 return ListView.builder(
                   reverse: true,
