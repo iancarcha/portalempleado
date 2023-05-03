@@ -12,54 +12,90 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-
-      _counter++;
-    });
-  }
+  String dropdownValue = 'Perfil';
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
-
         title: Text("Home Page"),
-        actions: [InkWell(
-          onTap: (){
-          FirebaseAuth.instance.signOut();
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) =>LoginPage()), (route) => false);
-    },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Icon(Icons.exit_to_app),
-      ),
-        )],
+        actions: [
+          InkWell(
+            onTap: (){
+              FirebaseAuth.instance.signOut();
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) =>LoginPage()), (route) => false);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(Icons.exit_to_app),
+            ),
+          ),
+        ],
       ),
       body: Center(
-
         child: Column(
-
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
               'Pagina del Home',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          ],
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Perfil'),
+              onTap: () {
+                setState(() {
+                  dropdownValue = 'Perfil';
+                  // Aquí va el código para cambiar a la página de perfil
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.chat),
+              title: Text('Chat'),
+              onTap: () {
+                setState(() {
+                  dropdownValue = 'Chat';
+                  // Aquí va el código para cambiar a la página de chat
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text('Calendario'),
+              onTap: () {
+                setState(() {
+                  dropdownValue = 'Calendario';
+                  // Aquí va el código para cambiar a la página de calendario
+                });
+                Navigator.pop(context);
+              },
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
