@@ -10,7 +10,6 @@ class CalendarPage extends StatefulWidget {
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }
-
 class _CalendarPageState extends State<CalendarPage> {
   late Map<DateTime, String> _holidays;
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -29,53 +28,75 @@ class _CalendarPageState extends State<CalendarPage> {
     Intl.defaultLocale = 'es_ES';
   }
 
-
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-    body: TableCalendar(
-      locale: 'es_ES',
-      calendarStyle: CalendarStyle(
-        todayDecoration: BoxDecoration(
-          color: Colors.blueGrey[100],
-          shape: BoxShape.circle,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        selectedDecoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
-        ),
-        weekendTextStyle: TextStyle(
-          color: Colors.red,
-        ),
-        holidayTextStyle: TextStyle(
-          color: Colors.green,
-          fontWeight: FontWeight.bold,
+        title: Text("Calendario"),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: TableCalendar(
+            locale: 'es_ES',
+            calendarStyle: CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.blueGrey[100],
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+              ),
+              weekendTextStyle: TextStyle(
+                color: Colors.red,
+              ),
+              holidayTextStyle: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+              // Customize the selected day's marker
+              markerDecoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.blue, width: 2),
+              ),
+            ),
+            headerStyle: HeaderStyle(
+              titleCentered: true,
+              formatButtonVisible: false,
+              titleTextStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+              leftChevronIcon: Icon(
+                Icons.chevron_left,
+                color: Colors.blueGrey[700],
+              ),
+              rightChevronIcon: Icon(
+                Icons.chevron_right,
+                color: Colors.blueGrey[700],
+              ),
+            ),
+            calendarFormat: _calendarFormat,
+            startingDayOfWeek: StartingDayOfWeek.monday, // Lunes como primer día de la semana
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            holidayPredicate: (day) => _holidays.containsKey(day),
+            firstDay: DateTime.utc(2000, 1, 1),
+            lastDay: DateTime.utc(2099, 12, 31),
+            weekendDays: [6, 7], // Sabado y domingo
+          ),
         ),
       ),
-      headerStyle: HeaderStyle(
-        titleCentered: true,
-        formatButtonVisible: false,
-        titleTextStyle: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
-        leftChevronIcon: Icon(
-          Icons.chevron_left,
-          color: Colors.blueGrey[700],
-        ),
-        rightChevronIcon: Icon(
-          Icons.chevron_right,
-          color: Colors.blueGrey[700],
-        ),
-      ),
-      calendarFormat: _calendarFormat,
-      focusedDay: _focusedDay,
-      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-      holidayPredicate: (day) => _holidays.containsKey(day),
-      firstDay: DateTime.utc(2023, 1, 1),
-      lastDay: DateTime.utc(2023, 12, 31),
-
-      weekendDays: [6, 7], // Fines de semana
-    )
     );
   }
 }
+
+

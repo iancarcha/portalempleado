@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:portalempleado/CalendarPage.dart';
 import 'package:portalempleado/ChatScreen.dart';
 import 'package:portalempleado/LoginPage.dart';
+import 'package:portalempleado/Perfil.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -15,11 +16,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late Empleado empleado;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    empleado = Empleado(
+      nombre: 'Juan',
+      apellidos: 'Pérez',
+      email: 'juan.perez@example.com',
+      telefono: '123456789',
+    );
   }
 
   @override
@@ -101,13 +109,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               leading: Icon(Icons.person),
               title: Text('Perfil'),
               onTap: () {
-                setState(() {
-                  dropdownValue = 'Perfil';
-                  _tabController.animateTo(0);
-                });
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Perfil(empleado: empleado)),
+                );
               },
             ),
+
             ListTile(
               leading: Icon(Icons.chat),
               title: Text('Chat'),
@@ -118,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 );
               },
             ),
+
             ListTile(
               leading: Icon(Icons.calendar_today),
               title: Text('Calendario'),
