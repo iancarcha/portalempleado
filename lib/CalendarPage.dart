@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:portalempleado/InfoCalendario.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-
+import 'package:portalempleado/InfoCalendario.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -22,17 +21,18 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     super.initState();
     _holidays = InfoCalendario.getDias();
-    initializeDateFormatting();
+    initializeDateFormatting('es_ES', null);
   }
 
-  Future<void> initializeDateFormatting() async {
-    await Future.wait([
-      initializeLocale('es', 'ES'),
-    ]);
+  Future<void> initializeDateSymbol(String locale, String? path) async {
+    await initializeDateFormatting(locale, path);
     Intl.defaultLocale = 'es_ES';
   }
+
+
   Widget build(BuildContext context) {
-    return TableCalendar(
+    return Scaffold(
+    body: TableCalendar(
       locale: 'es_ES',
       calendarStyle: CalendarStyle(
         todayDecoration: BoxDecoration(
@@ -73,8 +73,9 @@ class _CalendarPageState extends State<CalendarPage> {
       holidayPredicate: (day) => _holidays.containsKey(day),
       firstDay: DateTime.utc(2023, 1, 1),
       lastDay: DateTime.utc(2023, 12, 31),
-      // Configure custom day styles here
-      weekendDays: [6, 7], // Saturday, Sunday
+
+      weekendDays: [6, 7], // Fines de semana
+    )
     );
   }
 }
