@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:portalempleado/InfoCalendario.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -10,7 +13,6 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  late Map<DateTime, List<String>> _events;
   late Map<DateTime, String> _holidays;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
@@ -19,52 +21,17 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     super.initState();
-    _events = {};
     _holidays = InfoCalendario.getDias();
+    initializeDateFormatting();
   }
 
-  void _onDaySelected(DateTime day, List<dynamic> events) {
-    setState(() {
-      _selectedDay = day;
-    });
-
-    // Mark/unmark vacation days
-    if (_events[day] == null) {
-      _events[day] = ['Vacaciones'];
-    } else {
-      _events[day]!.remove('Vacaciones');
-      if (_events[day]!.isEmpty) {
-        _events.remove(day);
-      }
-    }
-
-    // Update bottom message
-    if (_holidays.containsKey(day)) {
-      setState(() {
-        _selectedDay = null;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hoy es festivo en España: ${_holidays[day]}'),
-          ),
-        );
-      });
-    } else if (_events.containsKey(day)) {
-      setState(() {
-        _selectedDay = null;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Tienes un día de vacaciones marcado'),
-          ),
-        );
-      });
-    } else {
-      setState(() {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      });
-    }
+  Future<void> initializeDateFormatting() async {
+    await Future.wait([
+      initializeLocale('es', 'ES'),
+    ]);
+    Intl.defaultLocale = 'es_ES';
   }
-
-  Widget _buildCalendar() {
+  Widget build(BuildContext context) {
     return TableCalendar(
       locale: 'es_ES',
       calendarStyle: CalendarStyle(
@@ -103,17 +70,11 @@ class _CalendarPageState extends State<CalendarPage> {
       calendarFormat: _calendarFormat,
       focusedDay: _focusedDay,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-      //onDaySelected: _onDaySelected,
-     // eventLoader: (day) => _events[day],
       holidayPredicate: (day) => _holidays.containsKey(day),
       firstDay: DateTime.utc(2023, 1, 1),
       lastDay: DateTime.utc(2023, 12, 31),
+      // Configure custom day styles here
+      weekendDays: [6, 7], // Saturday, Sunday
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
   }
 }

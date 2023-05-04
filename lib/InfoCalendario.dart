@@ -18,4 +18,9 @@ class InfoCalendario {
       DateTime(2023, 12, 31): "Nochevieja",
     };
   }
+
+  static Map<DateTime, String> getDiasFestivos() {
+    return {
+    };
+  }
 }

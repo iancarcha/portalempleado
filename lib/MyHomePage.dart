@@ -1,6 +1,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:portalempleado/CalendarPage.dart';
+import 'package:portalempleado/ChatScreen.dart';
 import 'package:portalempleado/LoginPage.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -11,21 +13,36 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-
-  String dropdownValue = 'Perfil';
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
 
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  String dropdownValue = 'Perfil';
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home Page"),
         actions: [
           InkWell(
-            onTap: (){
+            onTap: () {
               FirebaseAuth.instance.signOut();
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) =>LoginPage()), (route) => false);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+                    (route) => false,
+              );
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -34,15 +51,35 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Pagina del Home',
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Center(
+            child: Text('Perfil'),
+          ),
+          Center(
+            child: InkWell(
+              child: Text('Chat'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ChatScreen()),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+          Center(
+            child: InkWell(
+              child: Text('Calendario'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CalendarPage()),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -66,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 setState(() {
                   dropdownValue = 'Perfil';
-                  // Aquí va el código para cambiar a la página de perfil
+                  _tabController.animateTo(0);
                 });
                 Navigator.pop(context);
               },
@@ -75,27 +112,45 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: Icon(Icons.chat),
               title: Text('Chat'),
               onTap: () {
-                setState(() {
-                  dropdownValue = 'Chat';
-                  // Aquí va el código para cambiar a la página de chat
-                });
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ChatScreen()),
+                );
               },
             ),
             ListTile(
               leading: Icon(Icons.calendar_today),
               title: Text('Calendario'),
               onTap: () {
-                setState(() {
-                  dropdownValue = 'Calendario';
-                  // Aquí va el código para cambiar a la página de calendario
-                });
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CalendarPage()),
+                );
               },
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Material(
+        color: Colors.blue,
+        child: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(
+              text: 'Perfil',
+              icon: Icon(Icons.person),
+            ),
+            Tab(
+              text: 'Chat',
+              icon: Icon(Icons.chat),
+            ),
+            Tab(
+              text: 'Calendario',
+              icon: Icon(Icons.calendar_today),
             ),
           ],
         ),
       ),
     );
   }
-}
+  }
