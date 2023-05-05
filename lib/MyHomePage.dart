@@ -5,6 +5,7 @@ import 'package:portalempleado/CalendarPage.dart';
 import 'package:portalempleado/ChatScreen.dart';
 import 'package:portalempleado/LoginPage.dart';
 import 'package:portalempleado/Perfil.dart';
+import 'package:portalempleado/UploadFilePage.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -21,12 +22,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     empleado = Empleado(
-      nombre: 'Juan',
-      apellidos: 'Pérez',
-      email: 'juan.perez@example.com',
-      telefono: '123456789',
+      nombre: '',
+      apellidos: '',
+      email: '',
+      telefono: '',
     );
   }
 
@@ -64,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         children: [
           Center(
             child: Text('Perfil'),
+
           ),
           Center(
             child: InkWell(
@@ -85,6 +87,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   MaterialPageRoute(builder: (context) => CalendarPage()),
                 );
               },
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  child: Text('Cargar archivo'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => UploadFilePage()),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],
@@ -134,6 +152,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => CalendarPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.file_upload),
+              title: Text('Subir archivo'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UploadFilePage()),
                 );
               },
             ),

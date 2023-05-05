@@ -11,151 +11,185 @@ class CreateUserPage extends StatefulWidget{
   }
 }
 
-class _CreateUserState extends State<CreateUserPage>{
+class _CreateUserState extends State<CreateUserPage> {
 
   late String email, password;
   final _formsKey = GlobalKey<FormState>();
-  String error='';
+  String error = '';
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Portal del Empleado"),
+        title: Text("Arocival - Portal del Empleado"),
       ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 32.0),
+            Text(
+              "Registrarse",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 16.0),
+            Offstage(
+              offstage: error == '',
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  error,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+            formulario(),
+            SizedBox(height: 32.0),
+            botonCrearUsuario(),
+          ],
+        ),
+      ),
+    );
+  }
 
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget formulario() {
+    return Form(
+      key: _formsKey,
+      child: Column(
         children: [
-         Padding(
-             padding: const EdgeInsets.all(16.0),
-            child: Text("Crear Usuario", style: TextStyle(color: Colors.black, fontSize: 20),),
-         ) ,
-        Offstage(
-          offstage: error=='',
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(error, style: TextStyle(color: Colors.red, fontSize: 16),),
-
-          ),
-        ),
-        Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: formulario(),
-        ),
-          botonCrearUsuario(),
+          buildEmail(),
+          SizedBox(height: 16.0),
+          buildPassword(),
         ],
       ),
     );
   }
-  Widget formulario(){
-    return Form(
-      key: _formsKey,
-        child: Column(children: [
-        buildEmail(),
-        const Padding(padding: EdgeInsets.only(top: 12)),
-        buildPassword()
-    ]
-    ));
-  }
 
 
-
-  Widget buildEmail(){
-  return TextFormField(
-
-    decoration: InputDecoration(
-        labelText: "Email",
-      border: OutlineInputBorder(
-        borderRadius: new BorderRadius.circular(8),
-        borderSide: new BorderSide(color: Colors.black)
-      )
-    ),
-    keyboardType: TextInputType.emailAddress,
-    onSaved: (String? value){
-      email = value!;
-    },
-    validator: (value){
-      if(value!.isEmpty){
-        return "Este campo es obligatorio";
-      }
-      return null;
-    },
-  );
-  }
-
-  Widget buildPassword(){
+  Widget buildEmail() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: "Password",
-          border: OutlineInputBorder(
-              borderRadius: new BorderRadius.circular(8),
-              borderSide: new BorderSide(color: Colors.black)
-          )
+        labelText: "Correo electrónico",
+        border: OutlineInputBorder(
+          borderRadius: new BorderRadius.circular(8),
+          borderSide: new BorderSide(color: Colors.black),
+        ),
       ),
-      obscureText: true,
-      validator: (value){
-        if(value!.isEmpty){
+      keyboardType: TextInputType.emailAddress,
+      onSaved: (String? value) {
+        email = value!;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
           return "Este campo es obligatorio";
         }
         return null;
       },
-      onSaved: (String? value){
+    );
+  }
+
+  Widget buildPassword() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "Contraseña",
+        border: OutlineInputBorder(
+          borderRadius: new BorderRadius.circular(8),
+          borderSide: new BorderSide(color: Colors.black),
+        ),
+      ),
+      obscureText: true,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "Este campo es obligatorio";
+        }
+        return null;
+      },
+      onSaved: (String? value) {
         password = value!;
       },
     );
   }
 
   Widget botonCrearUsuario() {
-    return FractionallySizedBox(
-      widthFactor: 8.6,
-      child: ElevatedButton(
-          onPressed: () async{
-
-              if(_formsKey.currentState!.validate()){
-                _formsKey.currentState!.save();
-                UserCredential? credenciales = await crear(email, password);
-                if(credenciales !=null){
-                  if(credenciales.user != null){
-                    await  credenciales.user!.sendEmailVerification();
-                      Navigator.of(context).pop();
-
-                  }
-                }
+    return ElevatedButton(
+        onPressed: () async {
+          if (_formsKey.currentState!.validate()) {
+            _formsKey.currentState!.save();
+            UserCredential? credenciales = await crearUsuario(email, password);
+            if (credenciales != null) {
+              if (credenciales.user != null) {
+                await credenciales.user!.sendEmailVerification();
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Registro completado"),
+                      content: Text(
+                          "Se ha enviado un email de verificación a la dirección proporcionada."),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Aceptar"),
+                        ),
+                      ],
+                    );
+                  },
+                );
               }
-
-
-          },
-          child: Text("Registrarse")
-      ),
+            }
+          }
+        },
+        child: Text(
+          "Crear cuenta",
+          style: TextStyle(fontSize: 18.0),
+        ),
+        style: ElevatedButton.styleFrom(
+          primary: Colors.orange,
+          onPrimary: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        )
     );
   }
 
-  Future<UserCredential?>crear(String email, String password) async{
-    try{
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-      return userCredential;
 
-    } on FirebaseAuthException catch(e){
-      if(e.code == 'email-already-in-user'){
+  Future<UserCredential?> crearUsuario(String email, String password) async {
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
         setState(() {
-          error = "El correo ya est registrado";
+          error =
+          'La contraseña es demasiado débil. Por favor, elija una contraseña más segura.';
         });
-    }
-      if(e.code == 'weak-password'){
+      } else if (e.code == 'email-already-in-use') {
         setState(() {
-          error = "Contraseña muy debil";
+          error =
+          'Este email ya está en uso. Por favor, utilice una dirección de correo electrónico diferente.';
         });
       }
-    }catch(e){
-      print(e.toString());
     }
   }
-
 }
