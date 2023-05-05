@@ -38,7 +38,7 @@ class _CalendarPageState extends State<CalendarPage> {
             Navigator.pop(context);
           },
         ),
-        title: Text("Calendario"),
+        title: Text("Calendario - Arocival"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -47,11 +47,11 @@ class _CalendarPageState extends State<CalendarPage> {
             locale: 'es_ES',
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
-                color: Colors.blueGrey[100],
+                color: Colors.orange[100],
                 shape: BoxShape.circle,
               ),
               selectedDecoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.orange,
                 shape: BoxShape.circle,
               ),
               weekendTextStyle: TextStyle(
@@ -65,7 +65,7 @@ class _CalendarPageState extends State<CalendarPage> {
               markerDecoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.blue, width: 2),
+                border: Border.all(color: Colors.orange, width: 2),
               ),
             ),
             headerStyle: HeaderStyle(
@@ -77,15 +77,16 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
               leftChevronIcon: Icon(
                 Icons.chevron_left,
-                color: Colors.blueGrey[700],
+                color: Colors.orange[700],
               ),
               rightChevronIcon: Icon(
                 Icons.chevron_right,
-                color: Colors.blueGrey[700],
+                color: Colors.orange[700],
               ),
             ),
             calendarFormat: _calendarFormat,
-            startingDayOfWeek: StartingDayOfWeek.monday, // Lunes como primer día de la semana
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            // Lunes como primer día de la semana
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             holidayPredicate: (day) => _holidays.containsKey(day),
@@ -98,5 +99,3 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 }
-
-

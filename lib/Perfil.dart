@@ -1,34 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:portalempleado/Empleado.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Empleado {
-  String nombre;
-  String apellidos;
-  String email;
-  String telefono;
-
-  Empleado({
-    required this.nombre,
-    required this.apellidos,
-    required this.email,
-    required this.telefono,
-  });
-
-  void editarNombre(String nuevoNombre) {
-    this.nombre = nuevoNombre;
-  }
-
-  void editarApellidos(String nuevosApellidos) {
-    this.apellidos = nuevosApellidos;
-  }
-
-  void editarEmail(String nuevoEmail) {
-    this.email = nuevoEmail;
-  }
-
-  void editarTelefono(String nuevoTelefono) {
-    this.telefono = nuevoTelefono;
-  }
-}
 
 class Perfil extends StatefulWidget {
   final Empleado empleado;
@@ -40,6 +13,7 @@ class Perfil extends StatefulWidget {
 }
 
 class _PerfilState extends State<Perfil> {
+  late SharedPreferences _prefs;
   TextEditingController _nombreController = TextEditingController();
   TextEditingController _apellidosController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -48,19 +22,34 @@ class _PerfilState extends State<Perfil> {
   @override
   void initState() {
     super.initState();
+    _initSharedPreferences();
     _nombreController.text = widget.empleado.nombre;
     _apellidosController.text = widget.empleado.apellidos;
     _emailController.text = widget.empleado.email;
     _telefonoController.text = widget.empleado.telefono;
   }
 
+  Future<void> _initSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+    _nombreController.addListener(_guardarCambios);
+    _apellidosController.addListener(_guardarCambios);
+    _emailController.addListener(_guardarCambios);
+    _telefonoController.addListener(_guardarCambios);
+  }
+
   void _guardarCambios() {
-    setState(() {
-      widget.empleado.editarNombre(_nombreController.text);
-      widget.empleado.editarApellidos(_apellidosController.text);
-      widget.empleado.editarEmail(_emailController.text);
-      widget.empleado.editarTelefono(_telefonoController.text);
-    });
+    widget.empleado.editarNombre(_nombreController.text);
+    widget.empleado.editarApellidos(_apellidosController.text);
+    widget.empleado.editarEmail(_emailController.text);
+    widget.empleado.editarTelefono(_telefonoController.text);
+    _guardarEmpleadoEnSharedPreferences();
+  }
+
+  Future<void> _guardarEmpleadoEnSharedPreferences() async {
+    await _prefs.setString('nombre', widget.empleado.nombre);
+    await _prefs.setString('apellidos', widget.empleado.apellidos);
+    await _prefs.setString('email', widget.empleado.email);
+    await _prefs.setString('telefono', widget.empleado.telefono);
   }
 
   @override
