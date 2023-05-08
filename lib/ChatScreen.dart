@@ -14,9 +14,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final _scrollController = ScrollController();
   late String _userId;
   late String _userName;
-
-  // Lista de usuarios cargada desde la base de datos.
-  late List<Map<String, dynamic>> _users;
+  late List<Map<String, dynamic>> _users = [];
+  String? _currentUsername;
 
   // Lista de mensajes para el usuario seleccionado.
   List<Map<String, dynamic>> _messages = [];
@@ -30,7 +29,22 @@ class _ChatScreenState extends State<ChatScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       _userId = user.uid;
-      _userName = user.displayName!;
+      _userName = user.displayName ?? user.email!.split('@')[0]; // Obtener el nombre de usuario del usuario actual
+    }
+    final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+    if (currentUserEmail != null) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: currentUserEmail)
+          .get()
+          .then((querySnapshot) {
+        if (querySnapshot.size > 0) {
+          final user = querySnapshot.docs[0].data();
+          setState(() {
+            _currentUsername = user['username'];
+          });
+        }
+      });
     }
     // Cargar la lista de usuarios desde la base de datos.
     FirebaseFirestore.instance
@@ -39,6 +53,8 @@ class _ChatScreenState extends State<ChatScreen> {
         .then((querySnapshot) {
       _users = querySnapshot.docs.map((doc) => doc.data()).toList();
       setState(() {});
+    }).catchError((error) {
+      print('Error al cargar los usuarios: $error');
     });
   }
 
@@ -48,79 +64,83 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: _selectedUser != null
             ? Text(_selectedUser!['username'])
+            : _currentUsername != null
+            ? Text(_currentUsername!)
             : Text('Chat'),
       ),
       body: Column(
-          children: [
-      Expanded(
-      child: _selectedUser != null
-      ? StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('messages')
-          .where('users', arrayContains: _userId)
-          .where('users', arrayContains: _selectedUser!['uid'])
-          .orderBy('timestamp')
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+        children: [
+          Expanded(
+            child: _selectedUser != null
+                ? StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('messages')
+                  .where('users',
+                  arrayContainsAny: [_userId, _selectedUser!['uid']])
+                  .orderBy('timestamp')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
 
-        _messages = List<Map<String, dynamic>>.from(snapshot.data!.docs.map((doc) => doc.data()));
+                _messages = List<Map<String, dynamic>>.from(snapshot.data!.docs
+                    .map((doc) => doc.data()));
 
-        return ListView.builder(
-          reverse: true,
-          controller: _scrollController,
-          itemCount: _messages.length,
-          itemBuilder: (context, index) {
-            final message = _messages[index];
-            return ListTile(
-              title: Text(message['text']),
-              subtitle: Text(message['sender']),
-            );
-          },
-        );
-      },
-    )
-          : ListView.builder(
-        itemCount: _users.length,
-        itemBuilder: (context, index) {
-          final user = _users[index];
-          return ListTile(
-            title: Text(user['username']),
-            onTap: () {
-              setState(() {
-                _selectedUser = user;
-              });
-            },
-          );
-        },
-      ),
-      ),
-            if (_selectedUser != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                    decoration: InputDecoration(hintText: 'Enter message'),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _sendMessage,
-                ),
-              ],
+                return ListView.builder(
+                  reverse: true,
+                  controller: _scrollController,
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    final message = _messages[index];
+                    return ListTile(
+                      title: Text(message['text']),
+                      subtitle: Text(message['sender']),
+                    );
+                  },
+                );
+              },
+            )
+                : ListView.builder(
+              itemCount: _users.length,
+              itemBuilder: (context, index) {
+                final user = _users[index];
+                return ListTile(
+                  title: Text(user['username']),
+                  onTap: () {
+                    setState(() {
+                      _selectedUser = user;
+                    });
+                  },
+                );
+              },
             ),
           ),
+          if (_selectedUser != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(hintText: 'Escribe aqui'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: _sendMessage,
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
   }
+
 
   void _sendMessage() {
     final text = _controller.text.trim();
@@ -128,10 +148,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     FirebaseFirestore.instance.collection('messages').add({
       'text': text,
-      'user': _userName,
+      'sender': _userName,
       'userId': _userId,
       'timestamp': Timestamp.now(),
     });
+
 
     _controller.clear();
     _scrollController.animateTo(

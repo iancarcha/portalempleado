@@ -17,6 +17,7 @@ class _LoginState extends State<LoginPage>{
   late String email, password;
   final _formsKey = GlobalKey<FormState>();
   String error='';
+  bool isEmailVerified = false;
 
   @override
   void initState(){
@@ -158,11 +159,13 @@ class _LoginState extends State<LoginPage>{
             UserCredential? credenciales = await login(email, password);
             if (credenciales != null) {
               if (credenciales.user != null) {
-                if (credenciales.user!.emailVerified) {
+                if (isEmailVerified || credenciales.user!.emailVerified) {
+                  isEmailVerified = true; // Marcar como verificado
                   Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
-                          (Route<dynamic> route) => false);
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                        (Route<dynamic> route) => false,
+                  );
                 } else {
                   setState(() {
                     error = "Debes verificar tu correo para acceder";
@@ -193,10 +196,16 @@ class _LoginState extends State<LoginPage>{
 
   Future<UserCredential?> login(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      if (userCredential.user != null) {
+        isEmailVerified = userCredential.user!.emailVerified;
+      }
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

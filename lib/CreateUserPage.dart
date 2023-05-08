@@ -125,47 +125,49 @@ class _CreateUserState extends State<CreateUserPage> {
 
   Widget botonCrearUsuario() {
     return ElevatedButton(
-        onPressed: () async {
-          if (_formsKey.currentState!.validate()) {
-            _formsKey.currentState!.save();
-            UserCredential? credenciales = await crearUsuario(email, password);
-            if (credenciales != null) {
-              if (credenciales.user != null) {
-                await credenciales.user!.sendEmailVerification();
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("Registro completado"),
-                      content: Text(
-                          "Se ha enviado un email de verificación a la dirección proporcionada."),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("Aceptar"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              }
+      onPressed: () async {
+        if (_formsKey.currentState!.validate()) {
+          _formsKey.currentState!.save();
+          UserCredential? credenciales = await crearUsuario(email, password);
+          if (credenciales != null) {
+            if (credenciales.user != null) {
+              String userName = email.split('@')[0]; // Obtener la parte izquierda del '@' como nombre de usuario
+              await credenciales.user!.updateDisplayName(userName); // Establecer el nombre de usuario en Firebase Auth
+              await credenciales.user!.sendEmailVerification();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Registro completado"),
+                    content: Text(
+                        "Se ha enviado un email de verificación a la dirección proporcionada."),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Aceptar"),
+                      ),
+                    ],
+                  );
+                },
+              );
             }
           }
-        },
-        child: Text(
-          "Crear cuenta",
-          style: TextStyle(fontSize: 18.0),
+        }
+      },
+      child: Text(
+        "Crear cuenta",
+        style: TextStyle(fontSize: 18.0),
+      ),
+      style: ElevatedButton.styleFrom(
+        primary: Colors.orange,
+        onPrimary: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
         ),
-        style: ElevatedButton.styleFrom(
-          primary: Colors.orange,
-          onPrimary: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        )
+      ),
     );
   }
 
