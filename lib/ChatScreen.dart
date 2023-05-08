@@ -63,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: _selectedUser != null
-            ? Text(_selectedUser!['username'])
+            ? Text(_selectedUser!['username'] as String? ?? '')
             : _currentUsername != null
             ? Text(_currentUsername!)
             : Text('Chat'),
@@ -80,27 +80,40 @@ class _ChatScreenState extends State<ChatScreen> {
                   .orderBy('timestamp')
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
-                _messages = List<Map<String, dynamic>>.from(snapshot.data!.docs
-                    .map((doc) => doc.data()));
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error al obtener los mensajes'),
+                  );
+                }
+
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: Text('No hay mensajes'),
+                  );
+                }
+
+                final List<DocumentSnapshot> documents =
+                    snapshot.data!.docs;
 
                 return ListView.builder(
                   reverse: true,
                   controller: _scrollController,
-                  itemCount: _messages.length,
+                  itemCount: documents.length,
                   itemBuilder: (context, index) {
-                    final message = _messages[index];
+                    final message = documents[index].data() as Map<String, dynamic>;
                     return ListTile(
-                      title: Text(message['text']),
-                      subtitle: Text(message['sender']),
+                      title: Text(message['text'] as String),
+                      subtitle: Text(message['sender'] as String),
                     );
                   },
                 );
+
               },
             )
                 : ListView.builder(
@@ -140,6 +153,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+
 
 
   void _sendMessage() {

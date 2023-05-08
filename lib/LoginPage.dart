@@ -3,24 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:portalempleado/CreateUserPage.dart';
 import 'package:portalempleado/MyHomePage.dart';
 
-class LoginPage extends StatefulWidget{
-
-
+class LoginPage extends StatefulWidget {
   @override
-  State createState(){
+  State createState() {
     return _LoginState();
   }
 }
 
-class _LoginState extends State<LoginPage>{
-
+class _LoginState extends State<LoginPage> {
   late String email, password;
   final _formsKey = GlobalKey<FormState>();
-  String error='';
+  String error = '';
   bool isEmailVerified = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
@@ -37,9 +34,12 @@ class _LoginState extends State<LoginPage>{
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            Text(
-              "Iniciar sesión",
-              style: TextStyle(fontSize: 20),
+            Container(
+              padding: EdgeInsets.all(16),
+              child: Image.asset(
+                'logo.png',
+                height: 80,
+              ),
             ),
             SizedBox(height: 40),
             Padding(
@@ -86,7 +86,6 @@ class _LoginState extends State<LoginPage>{
     );
   }
 
-
   Widget formulario() {
     return Form(
       key: _formsKey,
@@ -99,8 +98,6 @@ class _LoginState extends State<LoginPage>{
       ),
     );
   }
-
-
 
   Widget buildEmail() {
     return TextFormField(
