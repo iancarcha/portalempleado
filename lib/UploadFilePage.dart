@@ -30,10 +30,10 @@ class _UploadFilePageState extends State<UploadFilePage> {
   // Funcion para cargar archivos
   void _uploadFile() async {
     try {
-      // Implement your code to upload the selected file here
-      // You can use a package like http or dio to perform the HTTP request
+      // Implementa aquí el código para cargar el archivo seleccionado
+      // Puedes utilizar un paquete como http o dio para realizar la solicitud HTTP
 
-      // 3 segunditos de espera
+      // Esperar 3 segundos
       await Future.delayed(Duration(seconds: 3));
 
       setState(() {
@@ -51,51 +51,123 @@ class _UploadFilePageState extends State<UploadFilePage> {
 
   // Function para descargar archivos
   void _downloadFile() {
-    // Implement your code to download the selected file here
-    // You can use a package like http or dio to perform the HTTP request
+    // Implementa aquí el código para descargar el archivo seleccionado
+    // Puedes utilizar un paquete como http o dio para realizar la solicitud HTTP
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Subir archivo'),
+        backgroundColor: Color(0xFF1C4E80),
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
-      body: Center(
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: 20),
+            Text(
+              'Subir archivo',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1C4E80),
+              ),
+            ),
+            SizedBox(height: 30),
             if (_selectedFile.path != '') ...[
-              Text('Archivo seleccionado: ${_selectedFile.path}'),
+              Text(
+                'Archivo seleccionado:',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1C4E80),
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                _selectedFile.path,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF1C4E80),
+                ),
+              ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _uploadFile,
-                child: Text('Subir archivo'),
+                child: Text(
+                  'Subir archivo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color(0xFF1C4E80)),
+                ),
               ),
               SizedBox(height: 20),
               if (_isFileUploaded)
                 Column(
                   children: [
-                    Text('El archivo se ha subido correctamente'),
+                    Text(
+                      'El archivo se ha subido correctamente',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1C4E80),
+                      ),
+                    ),
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _downloadFile,
-                      child: Text('Descargar archivo'),
+                      child: Text(
+                        'Descargar archivo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Color(0xFF1C4E80)),
+                      ),
                     ),
                   ],
                 ),
               if (_isUploadFailed)
                 Text(
                   'Se produjo un error al cargar el archivo. Inténtalo de nuevo.',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.red,
+                  ),
                 ),
             ] else ...[
-              Text('Selecciona un archivo para subir'),
+              Text(
+                'Selecciona un archivo para subir',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1C4E80),
+                ),
+              ),
               SizedBox(height: 20),
             ],
             ElevatedButton(
               onPressed: _selectFile,
-              child: Text('Seleccionar archivo'),
+              child: Text(
+                'Seleccionar archivo',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Color(0xFF1C4E80)),
+              ),
             ),
           ],
         ),

@@ -4,31 +4,35 @@ import 'package:portalempleado/CalendarPage.dart';
 import 'package:portalempleado/ChatScreen.dart';
 import 'package:portalempleado/Empleado.dart';
 import 'package:portalempleado/LoginPage.dart';
+import 'package:portalempleado/Opciones.dart';
 import 'package:portalempleado/Perfil.dart';
 import 'package:portalempleado/UploadFilePage.dart';
+import 'package:portalempleado/GestorDeProyectos.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Empleado empleado;
+
+
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     empleado = Empleado(
       nombre: '',
       apellidos: '',
       email: '',
       telefono: '',
     );
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -76,62 +80,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           Center(
             child: Text('Perfil'),
           ),
-          Center(
-            child: InkWell(
-              child: Text(
-                'Chat',
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ChatScreen()),
-                );
-              },
-            ),
-          ),
-          Center(
-            child: InkWell(
-              child: Text(
-                'Calendario',
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CalendarPage()),
-                );
-              },
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  child: Text(
-                    'Cargar archivo',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => UploadFilePage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xffe06b2c),
-                  ),
-                ),
-              ],
-            ),
-          ),
+
         ],
       ),
       drawer: Drawer(
@@ -181,6 +130,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
             ListTile(
+              leading: Icon(Icons.people, color: Color(0xffe06b2c)),
+              title: Text(
+                'Gestion de Proyectos',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              onTap: () {
+                //Navigator.push(
+                  //context,
+                //  MaterialPageRoute(builder: (context) => GestorDeProyectos()),
+                //);
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.calendar_today, color: Color(0xffe06b2c)),
               title: Text(
                 'Calendario',
@@ -210,29 +174,26 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 );
               },
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Material(
-          color: Color(0xFFfabb18),
-        child: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(
-              text: 'Perfil',
-              icon: Icon(Icons.person),
-            ),
-            Tab(
-              text: 'Chat',
-              icon: Icon(Icons.chat),
-            ),
-            Tab(
-              text: 'Calendario',
-              icon: Icon(Icons.calendar_today),
+            ListTile(
+              leading: Icon(Icons.brightness_7, color: Color(0xffe06b2c)),
+              title: Text(
+                'Opciones',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Opciones()),
+
+                );
+              },
             ),
           ],
         ),
       ),
+
     );
   }
   }
