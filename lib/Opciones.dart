@@ -67,35 +67,7 @@ class _OpcionesState extends State<Opciones> {
                 _mostrarCuadroDialogo(context);
               },
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.red[900]!),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.red[900]!),
-                  ),
-                ),
-              ),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                width: double.infinity,
-                child: Center(
-                  child: Text(
-                    'Eliminar cuenta',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-              onPressed: () {
-                _eliminarCuenta(context);
-              },
-            ),
+
           ],
         ),
       ),
@@ -198,59 +170,4 @@ class _OpcionesState extends State<Opciones> {
       },
     );
   }
-
-
-  // Función para eliminar la cuenta del usuario
-  void _eliminarCuenta(BuildContext context) async {
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    User user = FirebaseAuth.instance.currentUser!;
-
-    // Mostrar diálogo de confirmación
-    bool confirmacion = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('¿Estás seguro de eliminar tu cuenta?'),
-          content: Text('Esta acción no se puede deshacer.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              child: Text('Sí, eliminar'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    );
-
-    // Si el usuario confirmó, eliminar la cuenta
-    if (confirmacion == true) {
-      try {
-        await user.delete();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Cuenta eliminada"),
-          ),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error al eliminar la cuenta"),
-          ),
-        );
-      }
-    }
-  }
-
 }

@@ -2,12 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:portalempleado/CalendarPage.dart';
 import 'package:portalempleado/ChatScreen.dart';
+import 'package:portalempleado/Comunicacion.dart';
 import 'package:portalempleado/Empleado.dart';
+import 'package:portalempleado/Horario.dart';
 import 'package:portalempleado/LoginPage.dart';
 import 'package:portalempleado/Opciones.dart';
 import 'package:portalempleado/Perfil.dart';
 import 'package:portalempleado/UploadFilePage.dart';
-import 'package:portalempleado/GestorDeProyectos.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -21,8 +22,66 @@ class _MyHomePageState extends State<MyHomePage>
   late TabController _tabController;
   late Empleado empleado;
 
+  List<Comunicacion> comunicaciones = [    Comunicacion(      id: '1',      titulo: 'Comunicación 1',      descripcion: 'Descripción de la comunicación 1',      fecha: DateTime.now(),      autor: 'Autor de la comunicación 1',    ),    Comunicacion(      id: '2',      titulo: 'Comunicación 2',      descripcion: 'Descripción de la comunicación 2',      fecha: DateTime.now(),      autor: 'Autor de la comunicación 2',    ),  ];
 
+  void agregarComunicacion() {
+    String titulo = '';
+    String descripcion = '';
 
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Agregar comunicación'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Título',
+                ),
+                onChanged: (value) {
+                  titulo = value;
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Descripción',
+                ),
+                onChanged: (value) {
+                  descripcion = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Comunicacion comunicacion = Comunicacion(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  titulo: titulo,
+                  descripcion: descripcion,
+                  fecha: DateTime.now(),
+                  autor: empleado.nombre + ' ' + empleado.apellidos,
+                );
+                setState(() {
+                  comunicaciones.add(comunicacion);
+                });
+                Navigator.pop(context);
+              },
+              child: Text('Agregar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
   @override
   void initState() {
     super.initState();
@@ -74,13 +133,28 @@ class _MyHomePageState extends State<MyHomePage>
         ],
         backgroundColor: Color(0xffe06b2c),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          Center(
-            child: Text('Perfil'),
-          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+            ListView.builder(
+            itemCount: comunicaciones.length,
+              itemBuilder: (BuildContext context, int index) {
+                Comunicacion comunicacion = comunicaciones[index];
+                return ListTile(
+                  title: Text(comunicacion.titulo),
+                  subtitle: Text('${comunicacion.fecha.toString()} por ${comunicacion.autor}'),
+                  onTap: () {
+                    // TODO: Mostrar detalles de la comunicación
+                  },
+                );
+              },
 
+      )
+            ]),
+          ),
         ],
       ),
       drawer: Drawer(
@@ -142,6 +216,21 @@ class _MyHomePageState extends State<MyHomePage>
                   //context,
                 //  MaterialPageRoute(builder: (context) => GestorDeProyectos()),
                 //);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.access_time_outlined, color: Color(0xffe06b2c)),
+              title: Text(
+                'Horario',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Horario()),
+                );
               },
             ),
             ListTile(
