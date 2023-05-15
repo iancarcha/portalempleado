@@ -147,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage>
                   title: Text(comunicacion.titulo),
                   subtitle: Text('${comunicacion.fecha.toString()} por ${comunicacion.autor}'),
                   onTap: () {
-                    // TODO: Mostrar detalles de la comunicación
+                    // Detalles comunicacion
                   },
                 );
               },

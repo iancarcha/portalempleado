@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:portalempleado/MyHomePage.dart';
+import 'package:portalempleado/Rol.dart';
 
 class CreateUserPage extends StatefulWidget{
 
@@ -179,6 +179,32 @@ class _CreateUserState extends State<CreateUserPage> {
         email: email,
         password: password,
       );
+      if (userCredential.user != null) {
+        String userName = email.split('@')[0];
+        await userCredential.user!.updateDisplayName(userName);
+        await userCredential.user!.sendEmailVerification();
+
+        Rol rolUsuario = Rol(nombre: 'Usuario Normal', permisos: ['leer']);
+        await rolUsuario.asignarRolUsuario(userCredential.user!);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Registro completado"),
+              content: Text("Se ha enviado un email de verificación a la dirección proporcionada."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Aceptar"),
+                ),
+              ],
+            );
+          },
+        );
+      }
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
