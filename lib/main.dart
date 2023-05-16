@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:portalempleado/LoginPage.dart';
+import 'package:portalempleado/loginYregister/LoginPage.dart';
 import 'package:portalempleado/MyHomePage.dart';
 
 void main() async{

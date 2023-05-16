@@ -17,9 +17,6 @@ class _ChatScreenState extends State<ChatScreen> {
   late List<Map<String, dynamic>> _users = [];
   String? _currentUsername;
 
-  // Lista de mensajes para el usuario seleccionado.
-  List<Map<String, dynamic>> _messages = [];
-
   // Usuario seleccionado actualmente.
   Map<String, dynamic>? _selectedUser;
 
@@ -31,21 +28,19 @@ class _ChatScreenState extends State<ChatScreen> {
       _userId = user.uid;
       _userName = user.displayName ?? user.email!.split('@')[0]; // Obtener el nombre de usuario del usuario actual
     }
-    final currentUserEmail = FirebaseAuth.instance.currentUser?.email;
-    if (currentUserEmail != null) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: currentUserEmail)
-          .get()
-          .then((querySnapshot) {
-        if (querySnapshot.size > 0) {
-          final user = querySnapshot.docs[0].data();
-          setState(() {
-            _currentUsername = user['username'];
-          });
-        }
-      });
-    }
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(_userId)
+        .get()
+        .then((documentSnapshot) {
+      if (documentSnapshot.exists) {
+        final user = documentSnapshot.data();
+        setState(() {
+          _currentUsername = user?['username'] ?? 'username predeterminado';
+        });
+      }
+    });
+
     // Cargar la lista de usuarios desde la base de datos.
     FirebaseFirestore.instance
         .collection('users')
@@ -58,27 +53,33 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: _selectedUser != null
-            ? Text(_selectedUser!['username'] as String? ?? '')
-            : _currentUsername != null
-            ? Text(_currentUsername!)
-            : Text('Chat'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _selectedUser != null
-                ? StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('messages')
-                  .where('users',
-                  arrayContainsAny: [_userId, _selectedUser!['uid']])
-                  .orderBy('timestamp')
-                  .snapshots(),
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: _selectedUser != null
+              ? Text(_selectedUser!['username'] as String? ?? 'username predeterminado')
+              : _currentUsername != null
+              ? Text(_currentUsername!)
+              : Text('Chat'),
+        ),
+
+        body: Column(
+          children: [
+            Expanded(
+              child: _selectedUser != null
+                  ? StreamBuilder<QuerySnapshot>(
+                stream: _selectedUser['uid'] != null
+                    ? FirebaseFirestore.instance
+                    .collection('messages')
+                    .where('users', arrayContainsAny: [_userId, _selectedUser!['uid']])
+                    .orderBy('timestamp')
+                    .snapshots()
+                    : FirebaseFirestore.instance
+                    .collection('messages')
+                    .where('users', arrayContains: _userId)
+                    .orderBy('timestamp')
+                    .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -116,45 +117,43 @@ class _ChatScreenState extends State<ChatScreen> {
 
               },
             )
-                : ListView.builder(
-              itemCount: _users.length,
-              itemBuilder: (context, index) {
-                final user = _users[index];
-                return ListTile(
-                  title: Text(user['username']),
-                  onTap: () {
-                    setState(() {
-                      _selectedUser = user;
-                    });
-                  },
-                );
-              },
-            ),
-          ),
-          if (_selectedUser != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(hintText: 'Escribe aqui'),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: _sendMessage,
-                  ),
-                ],
+                  : ListView.builder(
+                itemCount: _users.length,
+                itemBuilder: (context, index) {
+                  final user = _users[index];
+                  return ListTile(
+                    title: Text(user['username'] as String),
+                    onTap: () {
+                      setState(() {
+                        _selectedUser = user;
+                      });
+                    },
+                  );
+                },
               ),
             ),
-        ],
-      ),
-    );
-  }
-
-
+            if (_selectedUser != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        decoration: InputDecoration(hintText: 'Escribe aquí'),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: _sendMessage,
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      );
+    }
 
   void _sendMessage() {
     final text = _controller.text.trim();
@@ -175,4 +174,5 @@ class _ChatScreenState extends State<ChatScreen> {
       curve: Curves.easeOut,
     );
   }
+
 }

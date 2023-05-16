@@ -10,14 +10,16 @@ class Opciones extends StatefulWidget {
 class _OpcionesState extends State<Opciones> {
   bool esAdministrador = false; // Variable para almacenar si el usuario es administrador
 
-  @override
-  void initState() {
-    super.initState();
-    // Verificar si el usuario actual es administrador
-    esAdministrador = verificarAdministrador() as bool;
+  Future<void> verificarAdministrador() async {
+    // Obtener el resultado de la verificación
+    bool esAdmin = await obtenerAdministrador();
+
+    setState(() {
+      esAdministrador = esAdmin;
+    });
   }
 
-  Future<bool> verificarAdministrador() async {
+  Future<bool> obtenerAdministrador() async {
     // Obtener el usuario actual
     User? user = FirebaseAuth.instance.currentUser;
 
@@ -39,9 +41,15 @@ class _OpcionesState extends State<Opciones> {
         }
       }
     }
-
     // El usuario no tiene el rol de administrador o no ha iniciado sesión
     return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Verificar si el usuario actual es administrador
+    verificarAdministrador();
   }
 
   @override
@@ -67,7 +75,7 @@ class _OpcionesState extends State<Opciones> {
           children: <Widget>[
             SizedBox(height: 20),
             Text(
-              'Aromes Citrics Valencians (Arocival)',
+              'Opciones',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -137,6 +145,7 @@ class _OpcionesState extends State<Opciones> {
       ),
     );
   }
+
 
   void _mostrarCuadroDialogoCambioContrasena(BuildContext context) {
     String nuevaContrasena = '';
@@ -250,7 +259,7 @@ class _OpcionesState extends State<Opciones> {
   }
 
 
-  /*void _mostrarDialogoCambioRol(BuildContext context) {
+  void _mostrarDialogoCambioRol(BuildContext context) {
     String selectedRole = ''; // Variable para almacenar el rol seleccionado
     String password = ''; // Variable para almacenar la contraseña ingresada
 
@@ -311,7 +320,7 @@ class _OpcionesState extends State<Opciones> {
         );
       },
     );
-  }*/
+  }
 
   void _cambiarRol(BuildContext context, String selectedRole, String password) {
     FirebaseFirestore.instance

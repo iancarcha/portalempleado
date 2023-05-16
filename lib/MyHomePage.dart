@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:portalempleado/CalendarPage.dart';
-import 'package:portalempleado/ChatScreen.dart';
+import 'package:portalempleado/menu/CalendarPage.dart';
+import 'package:portalempleado/menu/ChatScreen.dart';
 import 'package:portalempleado/Comunicacion.dart';
-import 'package:portalempleado/Empleado.dart';
-import 'package:portalempleado/Horario.dart';
-import 'package:portalempleado/LoginPage.dart';
-import 'package:portalempleado/Opciones.dart';
-import 'package:portalempleado/Perfil.dart';
-import 'package:portalempleado/UploadFilePage.dart';
+import 'package:portalempleado/menu/Empleado.dart';
+import 'package:portalempleado/menu/Horario.dart';
+import 'package:portalempleado/loginYregister/LoginPage.dart';
+import 'package:portalempleado/options/Opciones.dart';
+import 'package:portalempleado/menu/Perfil.dart';
+import 'package:portalempleado/menu/UploadFilePage.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);

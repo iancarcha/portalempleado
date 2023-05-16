@@ -1,4 +1,4 @@
-import 'package:portalempleado/Empleado.dart';
+import 'package:portalempleado/menu/Empleado.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EmpleadoService {

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:portalempleado/CreateUserPage.dart';
+import 'package:portalempleado/loginYregister/CreateUserPage.dart';
 import 'package:portalempleado/MyHomePage.dart';
 
 class LoginPage extends StatefulWidget {
