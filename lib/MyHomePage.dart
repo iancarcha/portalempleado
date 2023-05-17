@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:portalempleado/menu/CalendarPage.dart';
-import 'package:portalempleado/menu/ChatScreen.dart';
+import 'package:portalempleado/menu/Foro.dart';
 import 'package:portalempleado/Comunicacion.dart';
 import 'package:portalempleado/menu/Empleado.dart';
 import 'package:portalempleado/menu/Horario.dart';
@@ -9,6 +9,8 @@ import 'package:portalempleado/loginYregister/LoginPage.dart';
 import 'package:portalempleado/options/Opciones.dart';
 import 'package:portalempleado/menu/Perfil.dart';
 import 'package:portalempleado/menu/UploadFilePage.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -22,7 +24,22 @@ class _MyHomePageState extends State<MyHomePage>
   late TabController _tabController;
   late Empleado empleado;
 
-  List<Comunicacion> comunicaciones = [    Comunicacion(      id: '1',      titulo: 'Comunicación 1',      descripcion: 'Descripción de la comunicación 1',      fecha: DateTime.now(),      autor: 'Autor de la comunicación 1',    ),    Comunicacion(      id: '2',      titulo: 'Comunicación 2',      descripcion: 'Descripción de la comunicación 2',      fecha: DateTime.now(),      autor: 'Autor de la comunicación 2',    ),  ];
+  List<Comunicacion> comunicaciones = [
+    Comunicacion(
+      id: '1',
+      titulo: 'Comunicación 1',
+      descripcion: 'Descripción de la comunicación 1',
+      fecha: DateTime.now(),
+      autor: 'Autor de la comunicación 1',
+    ),
+    Comunicacion(
+      id: '2',
+      titulo: 'Comunicación 2',
+      descripcion: 'Descripción de la comunicación 2',
+      fecha: DateTime.now(),
+      autor: 'Autor de la comunicación 2',
+    ),
+  ];
 
   void agregarComunicacion() {
     String titulo = '';
@@ -82,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage>
       },
     );
   }
+
   @override
   void initState() {
     super.initState();
@@ -134,28 +152,124 @@ class _MyHomePageState extends State<MyHomePage>
         backgroundColor: Color(0xffe06b2c),
       ),
       body: Column(
-        children: [
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-            ListView.builder(
-            itemCount: comunicaciones.length,
-              itemBuilder: (BuildContext context, int index) {
-                Comunicacion comunicacion = comunicaciones[index];
-                return ListTile(
-                  title: Text(comunicacion.titulo),
-                  subtitle: Text('${comunicacion.fecha.toString()} por ${comunicacion.autor}'),
-                  onTap: () {
-                    // Detalles comunicacion
-                  },
+          children: [
+      Expanded(
+      child: GestureDetector(
+      onTap: () {
+      // Acción al hacer clic en el cuadro de comunicaciones
+      // Mostrar lista de comunicaciones y botón para añadir
+    },
+      child: Container(
+        padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4.0,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ListView.builder(
+          itemCount: comunicaciones.length,
+          itemBuilder: (BuildContext context, int index) {
+            Comunicacion comunicacion = comunicaciones[index];
+            return GestureDetector(
+              onTap: () {
+                // Detalles de la comunicación y usuario que la creó
+              },
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                margin: EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4.0,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      comunicacion.titulo,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      comunicacion.descripcion,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 8.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          DateFormat('dd/MM/yyyy').format(comunicacion.fecha),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12.0,
+                          ),
+                        ),
+                        Text(
+                          'Por ${comunicacion.autor}',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    ),
+    ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () async {
+                // Obtener una referencia a la colección "comunicaciones"
+                CollectionReference comunicacionesCollection = FirebaseFirestore.instance.collection('comunicaciones');
+
+                // Crear un nuevo documento con un ID automático
+                DocumentReference newComunicacionRef = comunicacionesCollection.doc();
+
+                // Crear un mapa con los datos de la nueva comunicación
+                Map<String, dynamic> nuevaComunicacion = {
+                  'titulo': 'Título de la comunicación',
+                  'descripcion': 'Descripción de la comunicación',
+                  'fecha': DateTime.now(),
+                  'autor': 'Nombre del autor',
+                };
+
+                // Guardar la nueva comunicación en Firestore
+                await newComunicacionRef.set(nuevaComunicacion);
+
+                // si todo va bien
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Comunicación creada exitosamente")),
                 );
               },
-
-      )
-            ]),
-          ),
-        ],
+              child: Text("Añadir Comunicaciones"),
+            ),
+          ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -189,9 +303,9 @@ class _MyHomePageState extends State<MyHomePage>
               },
             ),
             ListTile(
-              leading: Icon(Icons.chat, color: Color(0xffe06b2c)),
+              leading: Icon(Icons.people_sharp, color: Color(0xffe06b2c)),
               title: Text(
-                'Chat',
+                'Foro',
                 style: TextStyle(
                   color: Colors.black,
                 ),
@@ -199,7 +313,7 @@ class _MyHomePageState extends State<MyHomePage>
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ChatScreen()),
+                  MaterialPageRoute(builder: (context) => Foro()),
                 );
               },
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:portalempleado/menu/Empleado.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Perfil extends StatefulWidget {
   final Empleado empleado;
@@ -14,6 +14,7 @@ class Perfil extends StatefulWidget {
 
 class _PerfilState extends State<Perfil> {
   late SharedPreferences _prefs;
+  late User _user;
   TextEditingController _nombreController = TextEditingController();
   TextEditingController _apellidosController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -22,6 +23,7 @@ class _PerfilState extends State<Perfil> {
   @override
   void initState() {
     super.initState();
+    _user = FirebaseAuth.instance.currentUser!;
     _initSharedPreferences();
     _nombreController.text = widget.empleado.nombre;
     _apellidosController.text = widget.empleado.apellidos;
@@ -61,8 +63,24 @@ class _PerfilState extends State<Perfil> {
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: NetworkImage(_user.photoURL ?? ""),
+            ),
+            SizedBox(height: 16),
+            Text(
+              "Nombre: ${_user.displayName}",
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Email: ${_user.email}",
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 16),
             TextField(
               controller: _nombreController,
               decoration: InputDecoration(labelText: 'Nombre'),
