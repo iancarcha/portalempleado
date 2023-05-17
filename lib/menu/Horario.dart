@@ -46,6 +46,7 @@ class _HorarioState extends State<Horario> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Horario'),
+        backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         child: Column(

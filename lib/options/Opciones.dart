@@ -56,10 +56,11 @@ class _OpcionesState extends State<Opciones> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.orange,
         title: Text(
           'Opciones',
           style: TextStyle(color: Colors.black),
+
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),

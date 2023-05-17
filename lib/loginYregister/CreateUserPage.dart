@@ -171,7 +171,6 @@ class _CreateUserState extends State<CreateUserPage> {
     );
   }
 
-
   Future<UserCredential?> crearUsuario(String email, String password) async {
     try {
       final userCredential = await FirebaseAuth.instance

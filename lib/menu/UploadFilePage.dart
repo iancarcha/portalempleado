@@ -59,7 +59,7 @@ class _UploadFilePageState extends State<UploadFilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Subir archivo'),
-        backgroundColor: Color(0xFF1C4E80),
+        backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
         elevation: 0,
       ),

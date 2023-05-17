@@ -39,6 +39,7 @@ class _CalendarPageState extends State<CalendarPage> {
           },
         ),
         title: Text("Calendario - Arocival"),
+        backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         child: Padding(

@@ -318,7 +318,7 @@ class _MyHomePageState extends State<MyHomePage>
               },
             ),
             ListTile(
-              leading: Icon(Icons.people, color: Color(0xffe06b2c)),
+              leading: Icon(Icons.paste_rounded, color: Color(0xffe06b2c)),
               title: Text(
                 'Gestion de Proyectos',
                 style: TextStyle(

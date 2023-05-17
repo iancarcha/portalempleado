@@ -17,7 +17,6 @@ class _PerfilState extends State<Perfil> {
   late User _user;
   TextEditingController _nombreController = TextEditingController();
   TextEditingController _apellidosController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
   TextEditingController _telefonoController = TextEditingController();
 
   @override
@@ -27,7 +26,6 @@ class _PerfilState extends State<Perfil> {
     _initSharedPreferences();
     _nombreController.text = widget.empleado.nombre;
     _apellidosController.text = widget.empleado.apellidos;
-    _emailController.text = widget.empleado.email;
     _telefonoController.text = widget.empleado.telefono;
   }
 
@@ -35,14 +33,12 @@ class _PerfilState extends State<Perfil> {
     _prefs = await SharedPreferences.getInstance();
     _nombreController.addListener(_guardarCambios);
     _apellidosController.addListener(_guardarCambios);
-    _emailController.addListener(_guardarCambios);
     _telefonoController.addListener(_guardarCambios);
   }
 
   void _guardarCambios() {
     widget.empleado.editarNombre(_nombreController.text);
     widget.empleado.editarApellidos(_apellidosController.text);
-    widget.empleado.editarEmail(_emailController.text);
     widget.empleado.editarTelefono(_telefonoController.text);
     _guardarEmpleadoEnSharedPreferences();
   }
@@ -50,7 +46,6 @@ class _PerfilState extends State<Perfil> {
   Future<void> _guardarEmpleadoEnSharedPreferences() async {
     await _prefs.setString('nombre', widget.empleado.nombre);
     await _prefs.setString('apellidos', widget.empleado.apellidos);
-    await _prefs.setString('email', widget.empleado.email);
     await _prefs.setString('telefono', widget.empleado.telefono);
   }
 
@@ -59,6 +54,7 @@ class _PerfilState extends State<Perfil> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Perfil'),
+        backgroundColor: Colors.orange,
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
@@ -72,7 +68,7 @@ class _PerfilState extends State<Perfil> {
             ),
             SizedBox(height: 16),
             Text(
-              "Nombre: ${_user.displayName}",
+              "Usuario: ${_user.displayName}",
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 8),
@@ -90,10 +86,6 @@ class _PerfilState extends State<Perfil> {
               decoration: InputDecoration(labelText: 'Apellidos'),
             ),
             TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
               controller: _telefonoController,
               decoration: InputDecoration(labelText: 'Teléfono'),
             ),
@@ -105,7 +97,6 @@ class _PerfilState extends State<Perfil> {
             SizedBox(height: 16),
             Text('Nombre: ${widget.empleado.nombre}'),
             Text('Apellidos: ${widget.empleado.apellidos}'),
-            Text('Email: ${widget.empleado.email}'),
             Text('Teléfono: ${widget.empleado.telefono}'),
           ],
         ),
