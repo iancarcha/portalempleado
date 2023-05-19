@@ -59,7 +59,7 @@ class _OpcionesState extends State<Opciones> {
         backgroundColor: Colors.orange,
         title: Text(
           'Opciones',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
 
         ),
         leading: IconButton(

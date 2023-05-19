@@ -10,8 +10,7 @@ class Foro extends StatefulWidget {
 
 class _ForoState extends State<Foro> {
   final TextEditingController _textEditingController = TextEditingController();
-  final CollectionReference _messagesCollection =
-  FirebaseFirestore.instance.collection('messages');
+  final CollectionReference _messagesCollection = FirebaseFirestore.instance.collection('messages');
   late User _currentUser;
 
   @override
@@ -38,16 +37,12 @@ class _ForoState extends State<Foro> {
                   return ListView.builder(
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      final message =
-                      messages[index].data() as Map<String, dynamic>;
+                      final message = messages[index].data() as Map<String, dynamic>;
                       final sender = message['sender'];
                       final text = message['text'];
                       final timestamp = message['timestamp'] as Timestamp;
 
-                      // Convertir el timestamp a DateTime
                       final dateTime = timestamp.toDate();
-
-                      // Formatear la fecha y el día
                       final dateFormat = DateFormat('dd/MM/yyyy');
                       final timeFormat = DateFormat('HH:mm');
                       final formattedDate = dateFormat.format(dateTime);
@@ -81,9 +76,7 @@ class _ForoState extends State<Foro> {
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: () {
-                    _sendMessage();
-                  },
+                  onPressed: _sendMessage,
                 ),
               ],
             ),

@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:portalempleado/Comunicacion.dart';
 import 'package:portalempleado/menu/CalendarPage.dart';
 import 'package:portalempleado/menu/Foro.dart';
-import 'package:portalempleado/Comunicacion.dart';
 import 'package:portalempleado/menu/Empleado.dart';
 import 'package:portalempleado/menu/Horario.dart';
 import 'package:portalempleado/loginYregister/LoginPage.dart';
@@ -19,86 +19,11 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Empleado empleado;
-
-  List<Comunicacion> comunicaciones = [
-    Comunicacion(
-      id: '1',
-      titulo: 'Comunicación 1',
-      descripcion: 'Descripción de la comunicación 1',
-      fecha: DateTime.now(),
-      autor: 'Autor de la comunicación 1',
-    ),
-    Comunicacion(
-      id: '2',
-      titulo: 'Comunicación 2',
-      descripcion: 'Descripción de la comunicación 2',
-      fecha: DateTime.now(),
-      autor: 'Autor de la comunicación 2',
-    ),
-  ];
-
-  void agregarComunicacion() {
-    String titulo = '';
-    String descripcion = '';
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Agregar comunicación'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Título',
-                ),
-                onChanged: (value) {
-                  titulo = value;
-                },
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Descripción',
-                ),
-                onChanged: (value) {
-                  descripcion = value;
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                Comunicacion comunicacion = Comunicacion(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  titulo: titulo,
-                  descripcion: descripcion,
-                  fecha: DateTime.now(),
-                  autor: empleado.nombre + ' ' + empleado.apellidos,
-                );
-                setState(() {
-                  comunicaciones.add(comunicacion);
-                });
-                Navigator.pop(context);
-              },
-              child: Text('Agregar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  late List<Comunicacion> comunicaciones;
+  Comunicacion? selectedComunicacion; // Track the selected communication
 
   @override
   void initState() {
@@ -110,6 +35,22 @@ class _MyHomePageState extends State<MyHomePage>
       telefono: '',
     );
     _tabController = TabController(length: 4, vsync: this);
+    comunicaciones = [
+      Comunicacion(
+        id: '1',
+        titulo: 'Comunicación 1',
+        descripcion: 'Descripción de la comunicación 1',
+        fecha: DateTime.now(),
+        autor: 'Autor de la comunicación 1',
+      ),
+      Comunicacion(
+        id: '2',
+        titulo: 'Comunicación 2',
+        descripcion: 'Descripción de la comunicación 2',
+        fecha: DateTime.now(),
+        autor: 'Autor de la comunicación 2',
+      ),
+    ];
   }
 
   @override
@@ -152,96 +93,78 @@ class _MyHomePageState extends State<MyHomePage>
         backgroundColor: Color(0xffe06b2c),
       ),
       body: Column(
-          children: [
-      Expanded(
-      child: GestureDetector(
-      onTap: () {
-      // Acción al hacer clic en el cuadro de comunicaciones
-      // Mostrar lista de comunicaciones y botón para añadir
-    },
-      child: Container(
-        padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4.0,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ListView.builder(
-          itemCount: comunicaciones.length,
-          itemBuilder: (BuildContext context, int index) {
-            Comunicacion comunicacion = comunicaciones[index];
-            return GestureDetector(
-              onTap: () {
-                // Detalles de la comunicación y usuario que la creó
-              },
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                margin: EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4.0,
-                      offset: Offset(0, 2),
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: comunicaciones.length,
+              itemBuilder: (BuildContext context, int index) {
+                Comunicacion comunicacion = comunicaciones[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedComunicacion = comunicacion;
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      comunicacion.titulo,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      comunicacion.descripcion,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 8.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          DateFormat('dd/MM/yyyy').format(comunicacion.fecha),
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                        Text(
-                          'Por ${comunicacion.autor}',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12.0,
-                          ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4.0,
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    ),
-    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          comunicacion.titulo,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(
+                          comunicacion.descripcion,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 8.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              DateFormat('dd/MM/yyyy').format(comunicacion.fecha),
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                            Text(
+                              'Por ${comunicacion.autor}',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () async {
