@@ -20,7 +20,9 @@ class InfoCalendario {
   }
 
   static Map<DateTime, String> getDiasFestivos() {
+    // Agregar mas dias festivos si hace falta
     return {
+      // Dejar vacío por ahora
     };
   }
 }

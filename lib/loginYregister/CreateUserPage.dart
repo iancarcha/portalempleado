@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:portalempleado/options/Rol.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateUserPage extends StatefulWidget{
 
@@ -178,11 +179,29 @@ class _CreateUserState extends State<CreateUserPage> {
         email: email,
         password: password,
       );
+
       if (userCredential.user != null) {
         String userName = email.split('@')[0];
         await userCredential.user!.updateDisplayName(userName);
         await userCredential.user!.sendEmailVerification();
 
+        if (email == "iancarretero@gmail.com") {
+          await FirebaseFirestore.instance
+              .collection('roles')
+              .doc(userCredential.user!.uid)
+              .set({
+            'rol': 'admin',
+            'correo': email,
+          });
+        } else {
+          await FirebaseFirestore.instance
+              .collection('roles')
+              .doc(userCredential.user!.uid)
+              .set({
+            'rol': 'cliente',
+            'correo': email,
+          });
+        }
         Rol rolUsuario = Rol(nombre: 'Usuario Normal', permisos: ['leer']);
         await rolUsuario.asignarRolUsuario(userCredential.user!);
         showDialog(

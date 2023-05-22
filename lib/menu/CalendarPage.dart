@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:portalempleado/menu/InfoCalendario.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -10,22 +11,191 @@ class CalendarPage extends StatefulWidget {
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }
+
 class _CalendarPageState extends State<CalendarPage> {
   late Map<DateTime, String> _holidays;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  Map<DateTime, String> _selectedDates = {};
+
+  final TextEditingController _labelController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _holidays = InfoCalendario.getDias();
+    _holidays = {}; // Definir tus días festivos
     initializeDateFormatting('es_ES', null);
+    loadSelectedDates();
   }
 
-  Future<void> initializeDateSymbol(String locale, String? path) async {
-    await initializeDateFormatting(locale, path);
-    Intl.defaultLocale = 'es_ES';
+  Map<DateTime, String> _getHolidays() {
+    // Aquí puedes agregar los días festivos si deseas mostrarlos en el calendario
+    return {};
+  }
+
+  Future<void> saveSelectedDates() async {
+    try {
+      final List<Map<String, dynamic>> savedDates = _selectedDates.entries
+          .map((entry) => {
+        'date': entry.key.toIso8601String(),
+        'label': entry.value,
+      })
+          .toList();
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('selectedDates', savedDates.toString());
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Éxito'),
+          content: Text('Las fechas seleccionadas se han guardado correctamente.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Hubo un error al guardar las fechas seleccionadas.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<void> loadSelectedDates() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedDatesString = prefs.getString('selectedDates');
+
+      if (savedDatesString != null && savedDatesString.isNotEmpty) {
+        final savedDates = savedDatesString
+            .split(',')
+            .map((entry) => entry.replaceAll(RegExp(r'[\{\}\[\]]'), ''))
+            .map((entry) => entry.split(':'))
+            .where((entry) => entry.length == 2)
+            .map((entry) => {
+          'date': entry[0].trim(),
+          'label': entry[1].trim(),
+        })
+            .toList();
+
+        setState(() {
+          _selectedDates = savedDates.fold<Map<DateTime, String>>(
+            {},
+                (map, entry) {
+              final DateTime date = DateTime.parse(entry['date']!);
+              final String? label = entry['label'];
+              map[date] = label!;
+              return map;
+            },
+          );
+        });
+      }
+    } catch (e) {
+      print('Error al cargar las fechas: $e');
+    }
+  }
+
+  void _showLabelDialog(DateTime selectedDate) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Etiqueta para ${DateFormat('dd/MM/yyyy').format(selectedDate)}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _labelController,
+              decoration: InputDecoration(
+                labelText: 'Etiqueta',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              final String label = _labelController.text;
+              if (label.isNotEmpty) {
+                setState(() {
+                  _selectedDates[selectedDate] = label;
+                });
+              }
+              Navigator.pop(context);
+            },
+            child: Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteSelectedDates() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Eliminar fechas'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: _selectedDates.entries
+              .map(
+                (entry) => CheckboxListTile(
+              title: Text(DateFormat('dd/MM/yyyy').format(entry.key)),
+              value: false,
+              onChanged: (value) {
+                setState(() {
+                  if (value != null && value) {
+                    _selectedDates.remove(entry.key);
+                  }
+                });
+              },
+            ),
+          )
+              .toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _selectedDates.clear();
+              });
+              Navigator.pop(context);
+            },
+            child: Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -41,62 +211,129 @@ class _CalendarPageState extends State<CalendarPage> {
         title: Text("Calendario - Arocival"),
         backgroundColor: Colors.orange,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: TableCalendar(
-            locale: 'es_ES',
-            calendarStyle: CalendarStyle(
-              todayDecoration: BoxDecoration(
-                color: Colors.orange[100],
-                shape: BoxShape.circle,
-              ),
-              selectedDecoration: BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle,
-              ),
-              weekendTextStyle: TextStyle(
-                color: Colors.red,
-              ),
-              holidayTextStyle: TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
-              // Customize the selected day's marker
-              markerDecoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.orange, width: 2),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TableCalendar(
+                  locale: 'es_ES',
+                  calendarStyle: CalendarStyle(
+                    todayDecoration: BoxDecoration(
+                      color: Colors.orange[100],
+                      shape: BoxShape.circle,
+                    ),
+                    selectedDecoration: BoxDecoration(
+                      color: Colors.orange,
+                      shape: BoxShape.circle,
+                    ),
+                    weekendTextStyle: TextStyle(
+                      color: Colors.red,
+                    ),
+                    holidayTextStyle: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    // Customize the selected day's marker
+                    markerDecoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.orange, width: 2),
+                    ),
+                  ),
+                  headerStyle: HeaderStyle(
+                    titleCentered: true,
+                    formatButtonVisible: false,
+                    titleTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                    leftChevronIcon: Icon(
+                      Icons.chevron_left,
+                      color: Colors.orange[700],
+                    ),
+                    rightChevronIcon: Icon(
+                      Icons.chevron_right,
+                      color: Colors.orange[700],
+                    ),
+                  ),
+                  calendarFormat: _calendarFormat,
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  // Lunes como primer día de la semana
+                  focusedDay: _focusedDay,
+                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                  holidayPredicate: (day) => _holidays.containsKey(day),
+                  firstDay: DateTime.utc(2000, 1, 1),
+                  lastDay: DateTime.utc(2099, 12, 31),
+                  weekendDays: [6, 7], // Sabado y domingo
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
+                    _showLabelDialog(selectedDay);
+                  },
+                  calendarBuilders: CalendarBuilders(
+                    markerBuilder: (context, date, events) {
+                      final labels = _selectedDates[date];
+                      final markers = <Widget>[];
+
+                      if (labels != null && labels.isNotEmpty) {
+                        markers.add(
+                          Positioned(
+                            bottom: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              color: Colors.orange,
+                              child: Text(
+                                labels,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      return markers.isNotEmpty ? Column(children: markers) : null;
+                    },
+                  ),
+                ),
               ),
             ),
-            headerStyle: HeaderStyle(
-              titleCentered: true,
-              formatButtonVisible: false,
-              titleTextStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-              leftChevronIcon: Icon(
-                Icons.chevron_left,
-                color: Colors.orange[700],
-              ),
-              rightChevronIcon: Icon(
-                Icons.chevron_right,
-                color: Colors.orange[700],
-              ),
-            ),
-            calendarFormat: _calendarFormat,
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            // Lunes como primer día de la semana
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            holidayPredicate: (day) => _holidays.containsKey(day),
-            firstDay: DateTime.utc(2000, 1, 1),
-            lastDay: DateTime.utc(2099, 12, 31),
-            weekendDays: [6, 7], // Sabado y domingo
           ),
-        ),
+          SizedBox(height: 16),
+          Text(
+            'Fechas guardadas:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: _selectedDates.length,
+            itemBuilder: (context, index) {
+              final date = _selectedDates.keys.toList()[index];
+              final label = _selectedDates[date];
+              return ListTile(
+                title: Text(DateFormat('dd/MM/yyyy').format(date)),
+                subtitle: Text(label!),
+              );
+            },
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: saveSelectedDates,
+            child: Text('Guardar fechas seleccionadas'),
+          ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _deleteSelectedDates,
+            child: Text('Borrar fechas guardadas'),
+          ),
+        ],
       ),
     );
   }
 }
+
+
