@@ -1,5 +1,5 @@
-import 'dart:io';
-//import 'package:path_provider/path_provider.dart';
+/*import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -15,10 +15,10 @@ class UploadFilePage extends StatefulWidget {
 class _UploadFilePageState extends State<UploadFilePage> {
   late File _selectedFile = File('');
   bool _isFileUploaded = false;
-  bool _isUploadFailed = false;
+  bool _isUploadFailed = false;*/
 
   // Seleccionar el archivo
-  void _selectFile() async {
+  /*void _selectFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['png', 'pdf', 'jpeg', 'jpg'],
@@ -28,10 +28,10 @@ class _UploadFilePageState extends State<UploadFilePage> {
         _selectedFile = File(result.files.single.path!);
       });
     }
-  }
+  }*/
 
   // Funcion para cargar archivos
-  void _uploadFile() async {
+  /*void _uploadFile() async {
     try {
       if (_selectedFile.path != '') {
         String fileName = basename(_selectedFile.path);
@@ -56,11 +56,11 @@ class _UploadFilePageState extends State<UploadFilePage> {
     if (_selectedFile.path != '') {
       String fileName = basename(_selectedFile.path);
       Reference storageRef = FirebaseStorage.instance.ref().child(fileName);
-      final url = await storageRef.getDownloadURL();
+      final url = await storageRef.getDownloadURL();*/
 
       // Realizar la solicitud HTTP para descargar el archivo
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
+      /*var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {*/
         // Guardar el archivo en el dispositivo
 
         // Obtener el directorio de descarga
@@ -71,7 +71,7 @@ class _UploadFilePageState extends State<UploadFilePage> {
         //File(filePath).writeAsBytes(response.bodyBytes);
 
         // Mostrar una notificación o mensaje al usuario de que la descarga ha sido exitosa
-        showDialog(
+        /*showDialog(
           context: context,
           builder: (BuildContext dialogContext) => AlertDialog(
             title: Text('Descarga completa'),
@@ -105,10 +105,10 @@ class _UploadFilePageState extends State<UploadFilePage> {
         );
       }
     }
-  }
+  }*/
 
 
-  @override
+  /*@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -221,8 +221,7 @@ class _UploadFilePageState extends State<UploadFilePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0xFF1C4E80)),
+
               ),
             ),
           ],
@@ -231,3 +230,4 @@ class _UploadFilePageState extends State<UploadFilePage> {
     );
   }
 }
+*/

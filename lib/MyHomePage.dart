@@ -285,21 +285,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 );
               },
             ),
-            ListTile(
-              leading: Icon(Icons.file_upload, color: Color(0xffe06b2c)),
-              title: Text(
-                'Subir Archivos',
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UploadFilePage()),
-                );
-              },
-            ),
+            //ListTile(
+              //leading: Icon(Icons.file_upload, color: Color(0xffe06b2c)),
+              //title: Text(
+                //'Subir Archivos',
+                //style: TextStyle(
+                 // color: Colors.black,
+               // ),
+              //),
+              //onTap: () {
+               // Navigator.push(
+                 // context,
+                  //MaterialPageRoute(builder: (context) => UploadFilePage()),
+                //);
+              //},
+            //),
             ListTile(
               leading: Icon(Icons.brightness_7, color: Color(0xffe06b2c)),
               title: Text(
