@@ -165,10 +165,10 @@ packages:
     dependency: "direct overridden"
     description:
       name: firebase_storage
-      sha256: "1fe46462c9632db0f62db5b9f1abcb8d4232a6d3e7098d745f5790b71dedc822"
+      sha256: "89ff2dfd353f953fb2bbbe04359ea1a46d643944f310cfed22dadf352fc16976"
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.11"
+    version: "11.2.1"
   firebase_storage_platform_interface:
     dependency: transitive
     description:

@@ -29,7 +29,7 @@ dependency_overrides:
   cupertino_icons: ^1.0.5
   firebase_core: ^2.13.0
   firebase_auth: ^4.6.1
-  firebase_storage: ^10.3.11
+  firebase_storage: ^11.2.1
   cloud_firestore: ^4.7.1
   file_picker: ^5.3.0
   shared_preferences: ^2.1.1
