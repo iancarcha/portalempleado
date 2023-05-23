@@ -23,7 +23,13 @@ class _ForoState extends State<Foro> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Arocival - Foro'),
+        title: Text(
+          'Arocival Foro',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20.0,
+          ),
+        ),
         backgroundColor: Colors.orange,
       ),
       body: Column(
@@ -37,10 +43,12 @@ class _ForoState extends State<Foro> {
                   return ListView.builder(
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      final message = messages[index].data() as Map<String, dynamic>;
+                      final message =
+                      messages[index].data() as Map<String, dynamic>;
                       final sender = message['sender'];
                       final text = message['text'];
-                      final timestamp = message['timestamp'] as Timestamp;
+                      final timestamp =
+                      message['timestamp'] as Timestamp;
 
                       final dateTime = timestamp.toDate();
                       final dateFormat = DateFormat('dd/MM/yyyy');
@@ -49,8 +57,30 @@ class _ForoState extends State<Foro> {
                       final formattedTime = timeFormat.format(dateTime);
 
                       return ListTile(
-                        title: Text('$sender: $text'),
-                        subtitle: Text('$formattedDate - $formattedTime'),
+                        title: Text(
+                          '$sender',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '$text',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            SizedBox(height: 4.0),
+                            Text(
+                              '$formattedDate - $formattedTime',
+                              style: TextStyle(
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     },
                   );
@@ -59,24 +89,35 @@ class _ForoState extends State<Foro> {
               },
             ),
           ),
-          Padding(
+          Container(
             padding: EdgeInsets.all(8.0),
+            color: Colors.grey[200],
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _textEditingController,
                     decoration: InputDecoration(
-                      hintText: 'Escribe un mensaje',
+                      hintText: 'Write a message',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.send),
+                SizedBox(width: 8.0),
+                ElevatedButton(
                   onPressed: _sendMessage,
+                  style: ButtonStyle(
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.orange),
+                  ),
+                  child: Text(
+                    'Send',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),

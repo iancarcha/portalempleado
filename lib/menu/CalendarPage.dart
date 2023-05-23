@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:portalempleado/menu/InfoCalendario.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -18,20 +18,16 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Map<DateTime, String> _selectedDates = {};
+  Set<DateTime> _selectedDatesToDelete = {}; // Nuevo conjunto para almacenar las fechas seleccionadas para eliminar
 
   final TextEditingController _labelController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _holidays = {}; // Definir tus días festivos
+    _holidays = InfoCalendario.getDias();
     initializeDateFormatting('es_ES', null);
     loadSelectedDates();
-  }
-
-  Map<DateTime, String> _getHolidays() {
-    // Aquí puedes agregar los días festivos si deseas mostrarlos en el calendario
-    return {};
   }
 
   Future<void> saveSelectedDates() async {
@@ -140,7 +136,7 @@ class _CalendarPageState extends State<CalendarPage> {
           TextButton(
             onPressed: () {
               final String label = _labelController.text;
-              if (label.isNotEmpty) {
+              if (label.isNotEmpty && !_selectedDates.containsKey(selectedDate)) {
                 setState(() {
                   _selectedDates[selectedDate] = label;
                 });
@@ -165,11 +161,13 @@ class _CalendarPageState extends State<CalendarPage> {
               .map(
                 (entry) => CheckboxListTile(
               title: Text(DateFormat('dd/MM/yyyy').format(entry.key)),
-              value: false,
+              value: _selectedDatesToDelete.contains(entry.key), // Utilizamos el conjunto _selectedDatesToDelete para marcar las casillas de verificación
               onChanged: (value) {
                 setState(() {
                   if (value != null && value) {
-                    _selectedDates.remove(entry.key);
+                    _selectedDatesToDelete.add(entry.key); // Agregamos la fecha al conjunto _selectedDatesToDelete si se marca la casilla
+                  } else {
+                    _selectedDatesToDelete.remove(entry.key); // Eliminamos la fecha del conjunto _selectedDatesToDelete si se desmarca la casilla
                   }
                 });
               },
@@ -187,7 +185,10 @@ class _CalendarPageState extends State<CalendarPage> {
           TextButton(
             onPressed: () {
               setState(() {
-                _selectedDates.clear();
+                _selectedDatesToDelete.forEach((date) {
+                  _selectedDates.remove(date); // Eliminamos las fechas seleccionadas del mapa _selectedDates
+                });
+                _selectedDatesToDelete.clear(); // Limpiamos el conjunto _selectedDatesToDelete después de eliminar las fechas
               });
               Navigator.pop(context);
             },
@@ -323,17 +324,15 @@ class _CalendarPageState extends State<CalendarPage> {
           SizedBox(height: 16),
           ElevatedButton(
             onPressed: saveSelectedDates,
-            child: Text('Guardar fechas seleccionadas'),
+            child: Text('Guardar fechas'),
           ),
           SizedBox(height: 16),
           ElevatedButton(
             onPressed: _deleteSelectedDates,
-            child: Text('Borrar fechas guardadas'),
+            child: Text('Eliminar fechas'),
           ),
         ],
       ),
     );
   }
 }
-
-

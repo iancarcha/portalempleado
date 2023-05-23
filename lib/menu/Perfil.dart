@@ -64,7 +64,7 @@ class _PerfilState extends State<Perfil> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage(_user.photoURL ?? "lib/logo.png"),
+              backgroundImage: NetworkImage(_user.photoURL ?? "assets/logo.png"),
             ),
             SizedBox(height: 16),
             Text(
