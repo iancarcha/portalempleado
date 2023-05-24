@@ -57,62 +57,60 @@ class _HorarioState extends State<Horario> {
         backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Table(
-              border: TableBorder.all(),
-              columnWidths: {
-                0: FixedColumnWidth(60),
-                1: FlexColumnWidth(),
-                2: FlexColumnWidth(),
-                3: FlexColumnWidth(),
-                4: FlexColumnWidth(),
-                5: FlexColumnWidth(),
-                6: FlexColumnWidth(),
-                7: FlexColumnWidth(),
-                8: FlexColumnWidth(),
-                9: FlexColumnWidth(),
-                10: FlexColumnWidth(),
-                11: FlexColumnWidth(),
-              },
-              children: [
-                TableRow(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Horario',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              for (var hora = 8; hora < 20; hora++)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(),
-                    for (var dia in _diasSemana)
-                      TableCell(
-                        child: Center(child: Text(dia)),
-                      ),
+                    Text(
+                      '$hora:00',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    Wrap(
+                      spacing: 16,
+                      children: [
+                        for (var i = 0; i < 5; i++)
+                          Container(
+                            width: 100,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _diasSemana[i],
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 4),
+                                TextField(
+                                  controller: _controllers[i][hora - 8],
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
                   ],
                 ),
-                for (var hora = 8; hora < 20; hora++)
-                  TableRow(
-                    children: [
-                      TableCell(
-                        child: Center(child: Text('$hora:00')),
-                      ),
-                      for (var i = 0; i < 5; i++)
-                        TableCell(
-                          child: TextField(
-                            controller: _controllers[i][hora - 8],
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                    ],
-                  ),
-              ],
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: guardarCambios,
-              child: Text('Guardar cambios'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: guardarCambios,
+                child: Text('Guardar cambios'),
+              ),
+            ],
+          ),
         ),
       ),
     );

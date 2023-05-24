@@ -8,9 +8,10 @@ import 'package:portalempleado/menu/Horario.dart';
 import 'package:portalempleado/loginYregister/LoginPage.dart';
 import 'package:portalempleado/options/Opciones.dart';
 import 'package:portalempleado/menu/Perfil.dart';
-import 'package:portalempleado/menu/UploadFilePage.dart';
+//import 'package:portalempleado/menu/UploadFilePage.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:portalempleado/menu/GestorDeProyectos.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   late TabController _tabController;
   late Empleado empleado;
   late List<Comunicacion> comunicaciones;
-  Comunicacion? selectedComunicacion; // Track the selected communication
+  Comunicacion? selectedComunicacion;
 
   @override
   void initState() {
@@ -243,17 +244,18 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             ListTile(
               leading: Icon(Icons.paste_rounded, color: Color(0xffe06b2c)),
               title: Text(
-                'Gestion de Proyectos',
+                'Gestión de Proyectos',
                 style: TextStyle(
                   color: Colors.black,
                 ),
               ),
-              onTap: () {
-                //Navigator.push(
-                  //context,
-                //  MaterialPageRoute(builder: (context) => GestorDeProyectos()),
-                //);
-              },
+              /*onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GestorDeProyectos()),
+                );
+              },*/
+
             ),
             ListTile(
               leading: Icon(Icons.access_time_outlined, color: Color(0xffe06b2c)),

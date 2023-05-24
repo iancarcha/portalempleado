@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class Proyecto {
   final String nombre;
@@ -60,30 +57,47 @@ class Tarea {
   }
 }
 
-
 class ListaProyectos extends StatefulWidget {
   const ListaProyectos({Key? key}) : super(key: key);
 
   @override
   _ListaProyectosState createState() => _ListaProyectosState();
 }
+
 class _ListaProyectosState extends State<ListaProyectos> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _controller;
   bool _agregandoProyecto = false;
-  List<String> _proyectos = [];
+  List<Proyecto> _proyectos = [];
 
   @override
-
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _cargarProyectos();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _cargarProyectos() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String proyectosString = prefs.getString('proyectos') ?? '';
+    List<dynamic> proyectosJson = jsonDecode(proyectosString);
+
+    setState(() {
+      _proyectos = proyectosJson.map((json) => Proyecto.fromJson(json)).toList();
+    });
+  }
+
+  void _guardarProyectos() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<dynamic> proyectosJson = _proyectos.map((proyecto) => proyecto.toMap()).toList();
+    String proyectosString = jsonEncode(proyectosJson);
+    await prefs.setString('proyectos', proyectosString);
   }
 
   void _agregarProyecto() {
@@ -102,7 +116,9 @@ class _ListaProyectosState extends State<ListaProyectos> {
   void _guardarProyecto() {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _proyectos.add(_controller.text);
+        Proyecto nuevoProyecto = Proyecto(_controller.text, '', []);
+        _proyectos.add(nuevoProyecto);
+        _guardarProyectos();
         _agregandoProyecto = false;
         _controller.clear();
       });
@@ -112,6 +128,7 @@ class _ListaProyectosState extends State<ListaProyectos> {
   void _eliminarProyecto(int index) {
     setState(() {
       _proyectos.removeAt(index);
+      _guardarProyectos();
     });
   }
 
@@ -177,10 +194,9 @@ class _ListaProyectosState extends State<ListaProyectos> {
                 .entries
                 .map(
                   (entry) => Dismissible(
-                key: Key(entry.value),
+                key: Key(entry.key.toString()),
                 direction: DismissDirection.endToStart,
-                onDismissed: (direction) =>
-                    _eliminarProyecto(entry.key),
+                onDismissed: (direction) => _eliminarProyecto(entry.key),
                 background: Container(
                   alignment: AlignmentDirectional.centerEnd,
                   color: Colors.red,
@@ -190,7 +206,8 @@ class _ListaProyectosState extends State<ListaProyectos> {
                   ),
                 ),
                 child: ListTile(
-                  title: Text(entry.value),
+                  title: Text(entry.value.nombre),
+                  subtitle: Text(entry.value.descripcion),
                 ),
               ),
             )
@@ -200,4 +217,3 @@ class _ListaProyectosState extends State<ListaProyectos> {
     );
   }
 }
-

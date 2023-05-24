@@ -10,7 +10,8 @@ class Foro extends StatefulWidget {
 
 class _ForoState extends State<Foro> {
   final TextEditingController _textEditingController = TextEditingController();
-  final CollectionReference _messagesCollection = FirebaseFirestore.instance.collection('messages');
+  final CollectionReference _messagesCollection =
+  FirebaseFirestore.instance.collection('messages');
   late User _currentUser;
 
   @override
@@ -98,7 +99,7 @@ class _ForoState extends State<Foro> {
                   child: TextField(
                     controller: _textEditingController,
                     decoration: InputDecoration(
-                      hintText: 'Write a message',
+                      hintText: 'Escribe aqui',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -113,7 +114,21 @@ class _ForoState extends State<Foro> {
                     MaterialStateProperty.all<Color>(Colors.orange),
                   ),
                   child: Text(
-                    'Send',
+                    'Enviar',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: _deleteMessages,
+                  style: ButtonStyle(
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.red),
+                  ),
+                  child: Text(
+                    'Borrar mensajes',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -138,5 +153,39 @@ class _ForoState extends State<Foro> {
       });
       _textEditingController.clear();
     }
+  }
+
+  void _deleteMessages() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmacion'),
+          content: Text('Estas seguro que quieres borrar los mensajes?'),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Borrar'),
+              onPressed: () {
+                _messagesCollection
+                    .where('userId', isEqualTo: _currentUser.uid)
+                    .get()
+                    .then((querySnapshot) {
+                  querySnapshot.docs.forEach((doc) {
+                    doc.reference.delete();
+                  });
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

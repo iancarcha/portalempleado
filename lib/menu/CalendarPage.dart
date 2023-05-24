@@ -18,14 +18,14 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   Map<DateTime, String> _selectedDates = {};
-  Set<DateTime> _selectedDatesToDelete = {}; // Nuevo conjunto para almacenar las fechas seleccionadas para eliminar
+  Set<DateTime> _selectedDatesToDelete = {};
 
   final TextEditingController _labelController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _holidays = InfoCalendario.getDias();
+    _holidays = InfoCalendario.getDiasFestivos();
     initializeDateFormatting('es_ES', null);
     loadSelectedDates();
   }
@@ -161,13 +161,13 @@ class _CalendarPageState extends State<CalendarPage> {
               .map(
                 (entry) => CheckboxListTile(
               title: Text(DateFormat('dd/MM/yyyy').format(entry.key)),
-              value: _selectedDatesToDelete.contains(entry.key), // Utilizamos el conjunto _selectedDatesToDelete para marcar las casillas de verificación
+              value: _selectedDatesToDelete.contains(entry.key),
               onChanged: (value) {
                 setState(() {
                   if (value != null && value) {
-                    _selectedDatesToDelete.add(entry.key); // Agregamos la fecha al conjunto _selectedDatesToDelete si se marca la casilla
+                    _selectedDatesToDelete.add(entry.key);
                   } else {
-                    _selectedDatesToDelete.remove(entry.key); // Eliminamos la fecha del conjunto _selectedDatesToDelete si se desmarca la casilla
+                    _selectedDatesToDelete.remove(entry.key);
                   }
                 });
               },
@@ -186,9 +186,9 @@ class _CalendarPageState extends State<CalendarPage> {
             onPressed: () {
               setState(() {
                 _selectedDatesToDelete.forEach((date) {
-                  _selectedDates.remove(date); // Eliminamos las fechas seleccionadas del mapa _selectedDates
+                  _selectedDates.remove(date);
                 });
-                _selectedDatesToDelete.clear(); // Limpiamos el conjunto _selectedDatesToDelete después de eliminar las fechas
+                _selectedDatesToDelete.clear();
               });
               Navigator.pop(context);
             },
@@ -236,7 +236,6 @@ class _CalendarPageState extends State<CalendarPage> {
                       color: Colors.green,
                       fontWeight: FontWeight.bold,
                     ),
-                    // Customize the selected day's marker
                     markerDecoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
@@ -261,13 +260,12 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                   calendarFormat: _calendarFormat,
                   startingDayOfWeek: StartingDayOfWeek.monday,
-                  // Lunes como primer día de la semana
                   focusedDay: _focusedDay,
                   selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                   holidayPredicate: (day) => _holidays.containsKey(day),
                   firstDay: DateTime.utc(2000, 1, 1),
                   lastDay: DateTime.utc(2099, 12, 31),
-                  weekendDays: [6, 7], // Sabado y domingo
+                  weekendDays: [6, 7],
                   onDaySelected: (selectedDay, focusedDay) {
                     setState(() {
                       _selectedDay = selectedDay;
