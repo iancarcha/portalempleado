@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Horario extends StatefulWidget {
   const Horario({Key? key}) : super(key: key);
@@ -19,18 +21,30 @@ class _HorarioState extends State<Horario> {
     'Viernes': ['', '', '', '', '', '', '', '', '', '', '', ''],
   };
 
-  List<List<TextEditingController>> _controllers = [
-    [for (var i = 0; i < 12; i++) TextEditingController()],
-    [for (var i = 0; i < 12; i++) TextEditingController()],
-    [for (var i = 0; i < 12; i++) TextEditingController()],
-    [for (var i = 0; i < 12; i++) TextEditingController()],
-    [for (var i = 0; i < 12; i++) TextEditingController()],
-  ];
+  List<List<TextEditingController>> _controllers = List.generate(5, (_) => List.generate(12, (_) => TextEditingController()));
 
   @override
   void initState() {
     super.initState();
-    obtenerHorarioActual();
+    obtenerHorarioGuardado();
+  }
+
+  Future<void> obtenerHorarioGuardado() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String horarioGuardado = prefs.getString('horario') ?? '';
+
+    if (horarioGuardado.isNotEmpty) {
+      setState(() {
+        _horario = Map<String, List<String>>.from((jsonDecode(horarioGuardado) as Map).map((key, value) => MapEntry(key, List<String>.from(value))));
+        for (var i = 0; i < 5; i++) {
+          for (var j = 0; j < 12; j++) {
+            _controllers[i][j].text = _horario[_diasSemana[i]]![j];
+          }
+        }
+      });
+    } else {
+      obtenerHorarioActual();
+    }
   }
 
   Future<void> obtenerHorarioActual() async {
@@ -47,6 +61,23 @@ class _HorarioState extends State<Horario> {
         }
       });
     }
+  }
+
+  void borrarHorario() {
+    setState(() {
+      for (var i = 0; i < 5; i++) {
+        for (var j = 0; j < 12; j++) {
+          _controllers[i][j].text = '';
+        }
+      }
+      _horario = {
+        'Lunes': ['', '', '', '', '', '', '', '', '', '', '', ''],
+        'Martes': ['', '', '', '', '', '', '', '', '', '', '', ''],
+        'Miércoles': ['', '', '', '', '', '', '', '', '', '', '', ''],
+        'Jueves': ['', '', '', '', '', '', '', '', '', '', '', ''],
+        'Viernes': ['', '', '', '', '', '', '', '', '', '', '', ''],
+      };
+    });
   }
 
   @override
@@ -67,47 +98,56 @@ class _HorarioState extends State<Horario> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
-              for (var hora = 8; hora < 20; hora++)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '$hora:00',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: 16,
+                  columns: [
+                    DataColumn(
+                      label: Text(
+                        'Hora',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    Wrap(
-                      spacing: 16,
-                      children: [
+                    for (var i = 0; i < 5; i++)
+                      DataColumn(
+                        label: Text(
+                          _diasSemana[i],
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                  ],
+                  rows: [
+                    for (var hora = 8; hora < 20; hora++)
+                      DataRow(cells: [
+                        DataCell(
+                          Text('$hora:00'),
+                        ),
                         for (var i = 0; i < 5; i++)
-                          Container(
-                            width: 100,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _diasSemana[i],
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                          DataCell(
+                            Container(
+                              width: 100,
+                              child: TextField(
+                                controller: _controllers[i][hora - 8],
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
                                 ),
-                                SizedBox(height: 4),
-                                TextField(
-                                  controller: _controllers[i][hora - 8],
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    isDense: true,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
+                      ]),
                   ],
                 ),
+              ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: guardarCambios,
                 child: Text('Guardar cambios'),
+              ),
+              ElevatedButton(
+                onPressed: borrarHorario,
+                child: Text('Borrar horario'),
               ),
             ],
           ),
@@ -115,6 +155,7 @@ class _HorarioState extends State<Horario> {
       ),
     );
   }
+
 
   Future<void> guardarCambios() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -133,10 +174,17 @@ class _HorarioState extends State<Horario> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Horario guardado con éxito')),
       );
+
+      guardarHorarioEnSharedPreferences(jsonEncode(datosHorario));
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al guardar el horario')),
       );
     });
+  }
+
+  Future<void> guardarHorarioEnSharedPreferences(String horario) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('horario', horario);
   }
 }

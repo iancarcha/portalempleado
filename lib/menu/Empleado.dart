@@ -3,12 +3,16 @@ class Empleado {
   String apellidos;
   String email;
   String telefono;
+  String provincia;
+  String direccion;
 
   Empleado({
     required this.nombre,
     required this.apellidos,
     required this.email,
     required this.telefono,
+    required this.provincia,
+    required this.direccion,
   });
 
   void editarNombre(String nuevoNombre) {
@@ -25,5 +29,13 @@ class Empleado {
 
   void editarTelefono(String nuevoTelefono) {
     this.telefono = nuevoTelefono;
+  }
+
+  void editarProvincia(String nuevoProvincia) {
+    this.provincia = nuevoProvincia;
+  }
+
+  void editarDireccion(String nuevoDireccion) {
+    this.direccion = nuevoDireccion;
   }
 }

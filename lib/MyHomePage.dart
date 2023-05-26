@@ -14,7 +14,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:portalempleado/menu/GestorDeProyectos.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  final User user;
+  final bool isEmailVerified;
+
+  const MyHomePage({required this.user, required this.isEmailVerified, Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -34,6 +37,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       apellidos: '',
       email: '',
       telefono: '',
+      provincia: '',
+      direccion: '',
     );
     _tabController = TabController(length: 4, vsync: this);
     comunicaciones = [
@@ -186,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 // Guardar la nueva comunicación en Firestore
                 await newComunicacionRef.set(nuevaComunicacion);
 
-                // si todo va bien
+                // va bien
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("Comunicación creada exitosamente")),
                 );
@@ -222,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Perfil(empleado: empleado)),
+                  MaterialPageRoute(builder: (context) => Perfil(user: widget.user)),
                 );
               },
             ),

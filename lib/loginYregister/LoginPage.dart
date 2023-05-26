@@ -2,8 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:portalempleado/loginYregister/CreateUserPage.dart';
 import 'package:portalempleado/MyHomePage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
+  final User? user;
+
+  LoginPage({this.user});
+
   @override
   State createState() {
     return _LoginState();
@@ -15,6 +20,7 @@ class _LoginState extends State<LoginPage> {
   final _formsKey = GlobalKey<FormState>();
   String error = '';
   bool isEmailVerified = false;
+
 
   @override
   void initState() {
@@ -156,18 +162,21 @@ class _LoginState extends State<LoginPage> {
             UserCredential? credenciales = await login(email, password);
             if (credenciales != null) {
               if (credenciales.user != null) {
-                if (isEmailVerified || credenciales.user!.emailVerified) {
-                  isEmailVerified = true; // Marcar como verificado
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyHomePage()),
-                        (Route<dynamic> route) => false,
-                  );
-                } else {
-                  setState(() {
-                    error = "Debes verificar tu correo para acceder";
-                  });
-                }
+                isEmailVerified = credenciales.user!.emailVerified;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(
+                      user: credenciales.user!,
+                      isEmailVerified: isEmailVerified,
+                    ),
+                  ),
+                      (Route<dynamic> route) => false,
+                );
+              } else {
+                setState(() {
+                  error = "Error al iniciar sesión. Inténtelo de nuevo.";
+                });
               }
             }
           }
@@ -190,6 +199,8 @@ class _LoginState extends State<LoginPage> {
       ),
     );
   }
+
+
 
   Future<UserCredential?> login(String email, String password) async {
     try {

@@ -1,53 +1,92 @@
 import 'package:flutter/material.dart';
-import 'package:portalempleado/menu/Empleado.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:portalempleado/menu/Empleado.dart';
 
 class Perfil extends StatefulWidget {
-  final Empleado empleado;
+  final User user;
 
-  Perfil({required this.empleado});
+  Perfil({required this.user});
 
   @override
   _PerfilState createState() => _PerfilState();
 }
 
 class _PerfilState extends State<Perfil> {
-  late SharedPreferences _prefs;
-  late User _user;
-  TextEditingController _nombreController = TextEditingController();
-  TextEditingController _apellidosController = TextEditingController();
-  TextEditingController _telefonoController = TextEditingController();
+  late TextEditingController _nombreController;
+  late TextEditingController _apellidosController;
+  late TextEditingController _telefonoController;
+  late TextEditingController _provinciaController;
+  late TextEditingController _direccionController;
+
+  late Empleado _empleado;
 
   @override
   void initState() {
     super.initState();
-    _user = FirebaseAuth.instance.currentUser!;
-    _initSharedPreferences();
-    _nombreController.text = widget.empleado.nombre;
-    _apellidosController.text = widget.empleado.apellidos;
-    _telefonoController.text = widget.empleado.telefono;
+    _nombreController = TextEditingController(text: widget.user.displayName);
+    _apellidosController = TextEditingController();
+    _telefonoController = TextEditingController();
+    _provinciaController = TextEditingController();
+    _direccionController = TextEditingController();
+
+    _empleado = Empleado(
+      nombre: widget.user.displayName ?? '',
+      apellidos: '',
+      email: widget.user.email ?? '',
+      telefono: '',
+      provincia: '',
+      direccion: '',
+    );
+
+    _obtenerDatosUsuario();
   }
 
-  Future<void> _initSharedPreferences() async {
-    _prefs = await SharedPreferences.getInstance();
-    _nombreController.addListener(_guardarCambios);
-    _apellidosController.addListener(_guardarCambios);
-    _telefonoController.addListener(_guardarCambios);
+  Future<void> _obtenerDatosUsuario() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentSnapshot snapshot =
+    await firestore.collection('empleados').doc(widget.user.uid).get();
+
+    if (snapshot.exists) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
+      setState(() {
+        _empleado.editarApellidos(data['apellidos']);
+        _empleado.editarTelefono(data['telefono']);
+        _empleado.editarProvincia(data['provincia']);
+        _empleado.editarDireccion(data['direccion']);
+
+      });
+    }
   }
 
-  void _guardarCambios() {
-    widget.empleado.editarNombre(_nombreController.text);
-    widget.empleado.editarApellidos(_apellidosController.text);
-    widget.empleado.editarTelefono(_telefonoController.text);
-    _guardarEmpleadoEnSharedPreferences();
+  Future<void> _guardarCambios() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentReference empleadoRef = firestore.collection('empleados').doc(widget.user.uid);
+
+    _empleado.editarApellidos(_apellidosController.text);
+    _empleado.editarTelefono(_telefonoController.text);
+    _empleado.editarProvincia(_provinciaController.text);
+    _empleado.editarDireccion(_direccionController.text);
+
+    // Actualizar los controladores de texto con los nuevos valores
+    _apellidosController.text = _empleado.apellidos;
+    _telefonoController.text = _empleado.telefono;
+    _provinciaController.text = _empleado.provincia;
+    _direccionController.text = _empleado.direccion;
+
+    await empleadoRef.update({
+      'apellidos': _empleado.apellidos,
+      'telefono': _empleado.telefono,
+      'provincia': _empleado.provincia,
+      'direccion': _empleado.direccion,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Cambios guardados correctamente')),
+    );
   }
 
-  Future<void> _guardarEmpleadoEnSharedPreferences() async {
-    await _prefs.setString('nombre', widget.empleado.nombre);
-    await _prefs.setString('apellidos', widget.empleado.apellidos);
-    await _prefs.setString('telefono', widget.empleado.telefono);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,27 +97,30 @@ class _PerfilState extends State<Perfil> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
+    child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage(_user.photoURL ?? "assets/logo.png"),
+              backgroundImage: NetworkImage(widget.user.photoURL ??
+                  'https://blog.confirmbets.com/wp-content/uploads/2019/07/Messi.jpg'),
             ),
             SizedBox(height: 16),
             Text(
-              "Usuario: ${_user.displayName}",
+              'Usuario: ${widget.user.displayName}',
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 8),
             Text(
-              "Email: ${_user.email}",
+              'Email: ${widget.user.email}',
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 16),
             TextField(
               controller: _nombreController,
+              readOnly: true,
               decoration: InputDecoration(labelText: 'Nombre'),
             ),
             TextField(
@@ -89,17 +131,22 @@ class _PerfilState extends State<Perfil> {
               controller: _telefonoController,
               decoration: InputDecoration(labelText: 'Teléfono'),
             ),
+            TextField(
+              controller: _provinciaController,
+              decoration: InputDecoration(labelText: 'Provincia'),
+            ),
+            TextField(
+              controller: _direccionController,
+              decoration: InputDecoration(labelText: 'Direccion'),
+            ),
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: _guardarCambios,
               child: Text('Guardar cambios'),
             ),
-            SizedBox(height: 16),
-            Text('Nombre: ${widget.empleado.nombre}'),
-            Text('Apellidos: ${widget.empleado.apellidos}'),
-            Text('Teléfono: ${widget.empleado.telefono}'),
           ],
         ),
+      )
       ),
     );
   }
