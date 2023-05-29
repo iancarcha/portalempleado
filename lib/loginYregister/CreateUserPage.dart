@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:portalempleado/options/Rol.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:portalempleado/options/Rol.dart';
 
 class CreateUserPage extends StatefulWidget{
 
@@ -14,7 +14,7 @@ class CreateUserPage extends StatefulWidget{
 
 class _CreateUserState extends State<CreateUserPage> {
 
-  late String email, password;
+  late String email, password, userEmail;
   final _formsKey = GlobalKey<FormState>();
   String error = '';
 
@@ -27,7 +27,7 @@ class _CreateUserState extends State<CreateUserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Arocival - Portal del Empleado"),
+        title: Text("Arocival - Portal del Empleado"),backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -135,6 +135,25 @@ class _CreateUserState extends State<CreateUserPage> {
               String userName = email.split('@')[0]; // Obtener la parte izquierda del '@' como nombre de usuario
               await credenciales.user!.updateDisplayName(userName); // Establecer el nombre de usuario en Firebase Auth
               await credenciales.user!.sendEmailVerification();
+
+              if (email == "iancarretero@gmail.com") {
+                await FirebaseFirestore.instance
+                    .collection('roles')
+                    .doc(credenciales.user!.uid)
+                    .set({
+                  'rol': 'admin',
+                  'correo': userEmail,
+                });
+              } else {
+                await FirebaseFirestore.instance
+                    .collection('roles')
+                    .doc(credenciales.user!.uid)
+                    .set({
+                  'rol': 'cliente',
+                  'correo': userEmail,
+                });
+              }
+
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -180,49 +199,6 @@ class _CreateUserState extends State<CreateUserPage> {
         password: password,
       );
 
-      if (userCredential.user != null) {
-        String userName = email.split('@')[0];
-        await userCredential.user!.updateDisplayName(userName);
-        await userCredential.user!.sendEmailVerification();
-
-        if (email == "iancarretero@gmail.com") {
-          await FirebaseFirestore.instance
-              .collection('roles')
-              .doc(userCredential.user!.uid)
-              .set({
-            'rol': 'admin',
-            'correo': email,
-          });
-        } else {
-          await FirebaseFirestore.instance
-              .collection('roles')
-              .doc(userCredential.user!.uid)
-              .set({
-            'rol': 'cliente',
-            'correo': email,
-          });
-        }
-        Rol rolUsuario = Rol(nombre: 'Usuario Normal', permisos: ['leer']);
-        await rolUsuario.asignarRolUsuario(userCredential.user!);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Registro completado"),
-              content: Text("Se ha enviado un email de verificación a la dirección proporcionada."),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Aceptar"),
-                ),
-              ],
-            );
-          },
-        );
-      }
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

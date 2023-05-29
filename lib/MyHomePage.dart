@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:portalempleado/Comunicacion.dart';
 import 'package:portalempleado/menu/CalendarPage.dart';
+import 'package:portalempleado/menu/Chat/UserListTab.dart';
 import 'package:portalempleado/menu/Foro.dart';
 import 'package:portalempleado/menu/Empleado.dart';
 import 'package:portalempleado/menu/Horario.dart';
@@ -12,6 +13,7 @@ import 'package:portalempleado/menu/Perfil.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:portalempleado/menu/GestorDeProyectos.dart';
+import 'package:portalempleado/loginYregister/UserRoleManager.dart';
 
 class MyHomePage extends StatefulWidget {
   final User user;
@@ -232,6 +234,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
             ListTile(
+              leading: Icon(Icons.chat, color: Color(0xffe06b2c)),
+              title: Text(
+                'Chat',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserListTab()),
+                );
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.people_sharp, color: Color(0xffe06b2c)),
               title: Text(
                 'Foro',
@@ -307,6 +324,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 //);
               //},
             //),
+            ListTile(
+              leading: Icon(Icons.verified_user, color: Color(0xffe06b2c)),
+              title: Text(
+                'Usuarios',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserRoleManagerPage()),
+
+                );
+              },
+            ),
             ListTile(
               leading: Icon(Icons.brightness_7, color: Color(0xffe06b2c)),
               title: Text(

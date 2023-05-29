@@ -103,9 +103,11 @@ class _PerfilState extends State<Perfil> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage(widget.user.photoURL ??
-                  'https://blog.confirmbets.com/wp-content/uploads/2019/07/Messi.jpg'),
+              radius: 60,
+                child: Image.asset(
+                  'assets/logo.png',
+                  height: 60,
+                ),
             ),
             SizedBox(height: 16),
             Text(
