@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:portalempleado/Comunicacion.dart';
-import 'package:portalempleado/menu/CalendarPage.dart';
+import 'package:portalempleado/menu/Calendario/CalendarPage.dart';
 import 'package:portalempleado/menu/Chat/UserListTab.dart';
 import 'package:portalempleado/menu/Foro.dart';
 import 'package:portalempleado/menu/Empleado.dart';

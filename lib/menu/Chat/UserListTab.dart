@@ -8,6 +8,7 @@ class UserListTab extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Lista de Usuarios'),
+          backgroundColor: Colors.orange,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('users').snapshots(),
