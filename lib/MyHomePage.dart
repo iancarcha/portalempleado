@@ -9,7 +9,7 @@ import 'package:portalempleado/menu/Horario.dart';
 import 'package:portalempleado/loginYregister/LoginPage.dart';
 import 'package:portalempleado/options/Opciones.dart';
 import 'package:portalempleado/menu/Perfil.dart';
-//import 'package:portalempleado/menu/UploadFilePage.dart';
+import 'package:portalempleado/menu/UploadFilePage.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:portalempleado/menu/GestorDeProyectos.dart';
@@ -309,21 +309,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 );
               },
             ),
-            //ListTile(
-              //leading: Icon(Icons.file_upload, color: Color(0xffe06b2c)),
-              //title: Text(
-                //'Subir Archivos',
-                //style: TextStyle(
-                 // color: Colors.black,
-               // ),
-              //),
-              //onTap: () {
-               // Navigator.push(
-                 // context,
-                  //MaterialPageRoute(builder: (context) => UploadFilePage()),
-                //);
-              //},
-            //),
+            ListTile(
+              leading: Icon(Icons.file_upload, color: Color(0xffe06b2c)),
+              title: Text(
+                'Subir Archivos',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UploadFilePage()),
+                );
+              },
+            ),
             ListTile(
               leading: Icon(Icons.verified_user, color: Color(0xffe06b2c)),
               title: Text(
