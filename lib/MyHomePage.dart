@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       telefono: '',
       provincia: '',
       direccion: '',
+      apodo: '',
     );
     _tabController = TabController(length: 4, vsync: this);
     comunicaciones = [
@@ -69,12 +70,43 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   String dropdownValue = 'Perfil';
 
+  void mostrarDetallesComunicacion(Comunicacion comunicacion) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(comunicacion.titulo),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(comunicacion.descripcion),
+              SizedBox(height: 8.0),
+              Text(
+                'Fecha: ${DateFormat('dd/MM/yyyy').format(comunicacion.fecha)}',
+              ),
+              Text('Autor: ${comunicacion.autor}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Home Page",
+          "Home",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -109,10 +141,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 Comunicacion comunicacion = comunicaciones[index];
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      selectedComunicacion = comunicacion;
-                    });
+                    mostrarDetallesComunicacion(comunicacion);
                   },
+
                   child: Container(
                     padding: EdgeInsets.all(8.0),
                     margin: EdgeInsets.symmetric(
@@ -173,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
           ),
-            SizedBox(height: 16.0),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () async {
                 // Obtener una referencia a la colección "comunicaciones"
@@ -210,12 +241,28 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               decoration: BoxDecoration(
                 color: Color(0xffe06b2c),
               ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/logo.png',
+                    width: 100,
+                    height: 100,
+
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Menú',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                    ),
+                  ),
+                  Icon(
+                    Icons.exit_to_app,
+                    color: Colors.white,
+                  ),
+                ],
               ),
             ),
             ListTile(
@@ -282,7 +329,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             ListTile(
               leading: Icon(Icons.access_time_outlined, color: Color(0xffe06b2c)),
               title: Text(
-                'Horario',
+                'Agenda',
                 style: TextStyle(
                   color: Colors.black,
                 ),
@@ -312,7 +359,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             ListTile(
               leading: Icon(Icons.file_upload, color: Color(0xffe06b2c)),
               title: Text(
-                'Subir Archivos',
+                'Gestión documental',
                 style: TextStyle(
                   color: Colors.black,
                 ),

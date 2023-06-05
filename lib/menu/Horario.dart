@@ -21,7 +21,8 @@ class _HorarioState extends State<Horario> {
     'Viernes': ['', '', '', '', '', '', '', '', '', '', '', ''],
   };
 
-  List<List<TextEditingController>> _controllers = List.generate(5, (_) => List.generate(12, (_) => TextEditingController()));
+  List<List<TextEditingController>> _controllers =
+  List.generate(5, (_) => List.generate(12, (_) => TextEditingController()));
 
   @override
   void initState() {
@@ -35,7 +36,8 @@ class _HorarioState extends State<Horario> {
 
     if (horarioGuardado.isNotEmpty) {
       setState(() {
-        _horario = Map<String, List<String>>.from((jsonDecode(horarioGuardado) as Map).map((key, value) => MapEntry(key, List<String>.from(value))));
+        _horario = Map<String, List<String>>.from((jsonDecode(horarioGuardado) as Map).map((key, value) =>
+            MapEntry(key, List<String>.from(value))));
         for (var i = 0; i < 5; i++) {
           for (var j = 0; j < 12; j++) {
             _controllers[i][j].text = _horario[_diasSemana[i]]![j];
@@ -64,6 +66,33 @@ class _HorarioState extends State<Horario> {
   }
 
   void borrarHorario() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmación'),
+          content: Text('¿Estás seguro de que quieres borrar el horario actual?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+              },
+            ),
+            TextButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+                ejecutarBorradoHorario();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void ejecutarBorradoHorario() {
     setState(() {
       for (var i = 0; i < 5; i++) {
         for (var j = 0; j < 12; j++) {
@@ -84,7 +113,7 @@ class _HorarioState extends State<Horario> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Horario'),
+        title: Text('Agenda'),
         backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
@@ -156,27 +185,94 @@ class _HorarioState extends State<Horario> {
     );
   }
 
-
   Future<void> guardarCambios() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference horarios = firestore.collection('horarios');
     DocumentReference horarioActual = horarios.doc('horario_actual');
 
     Map<String, List<String>> datosHorario = {
-      'Lunes': [_controllers[0][0].text, _controllers[0][1].text, _controllers[0][2].text, _controllers[0][3].text, _controllers[0][4].text, _controllers[0][5].text, _controllers[0][6].text, _controllers[0][7].text, _controllers[0][8].text, _controllers[0][9].text, _controllers[0][10].text, _controllers[0][11].text],
-      'Martes': [_controllers[1][0].text, _controllers[1][1].text, _controllers[1][2].text, _controllers[1][3].text, _controllers[1][4].text, _controllers[1][5].text, _controllers[1][6].text, _controllers[1][7].text, _controllers[1][8].text, _controllers[1][9].text, _controllers[1][10].text, _controllers[1][11].text],
-      'Miércoles': [_controllers[2][0].text, _controllers[2][1].text, _controllers[2][2].text, _controllers[2][3].text, _controllers[2][4].text, _controllers[2][5].text, _controllers[2][6].text, _controllers[2][7].text, _controllers[2][8].text, _controllers[2][9].text, _controllers[2][10].text, _controllers[2][11].text],
-      'Jueves': [_controllers[3][0].text, _controllers[3][1].text, _controllers[3][2].text, _controllers[3][3].text, _controllers[3][4].text, _controllers[3][5].text, _controllers[3][6].text, _controllers[3][7].text, _controllers[3][8].text, _controllers[3][9].text, _controllers[3][10].text, _controllers[3][11].text],
-      'Viernes': [_controllers[4][0].text, _controllers[4][1].text, _controllers[4][2].text, _controllers[4][3].text, _controllers[4][4].text, _controllers[4][5].text, _controllers[4][6].text, _controllers[4][7].text, _controllers[4][8].text, _controllers[4][9].text, _controllers[4][10].text, _controllers[4][11].text],
+      'Lunes': [
+        _controllers[0][0].text,
+        _controllers[0][1].text,
+        _controllers[0][2].text,
+        _controllers[0][3].text,
+        _controllers[0][4].text,
+        _controllers[0][5].text,
+        _controllers[0][6].text,
+        _controllers[0][7].text,
+        _controllers[0][8].text,
+        _controllers[0][9].text,
+        _controllers[0][10].text,
+        _controllers[0][11].text
+      ],
+      'Martes': [
+        _controllers[1][0].text,
+        _controllers[1][1].text,
+        _controllers[1][2].text,
+        _controllers[1][3].text,
+        _controllers[1][4].text,
+        _controllers[1][5].text,
+        _controllers[1][6].text,
+        _controllers[1][7].text,
+        _controllers[1][8].text,
+        _controllers[1][9].text,
+        _controllers[1][10].text,
+        _controllers[1][11].text
+      ],
+      'Miércoles': [
+        _controllers[2][0].text,
+        _controllers[2][1].text,
+        _controllers[2][2].text,
+        _controllers[2][3].text,
+        _controllers[2][4].text,
+        _controllers[2][5].text,
+        _controllers[2][6].text,
+        _controllers[2][7].text,
+        _controllers[2][8].text,
+        _controllers[2][9].text,
+        _controllers[2][10].text,
+        _controllers[2][11].text
+      ],
+      'Jueves': [
+        _controllers[3][0].text,
+        _controllers[3][1].text,
+        _controllers[3][2].text,
+        _controllers[3][3].text,
+        _controllers[3][4].text,
+        _controllers[3][5].text,
+        _controllers[3][6].text,
+        _controllers[3][7].text,
+        _controllers[3][8].text,
+        _controllers[3][9].text,
+        _controllers[3][10].text,
+        _controllers[3][11].text
+      ],
+      'Viernes': [
+        _controllers[4][0].text,
+        _controllers[4][1].text,
+        _controllers[4][2].text,
+        _controllers[4][3].text,
+        _controllers[4][4].text,
+        _controllers[4][5].text,
+        _controllers[4][6].text,
+        _controllers[4][7].text,
+        _controllers[4][8].text,
+        _controllers[4][9].text,
+        _controllers[4][10].text,
+        _controllers[4][11].text
+      ],
     };
 
-    await horarioActual.set(datosHorario).then((value) {
+    await horarioActual
+        .set(datosHorario)
+        .then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Horario guardado con éxito')),
       );
 
       guardarHorarioEnSharedPreferences(jsonEncode(datosHorario));
-    }).catchError((error) {
+    })
+        .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al guardar el horario')),
       );

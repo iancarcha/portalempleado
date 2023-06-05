@@ -5,7 +5,7 @@ import 'package:portalempleado/menu/Empleado.dart';
 
 class ComunicacionesPage extends StatelessWidget {
   final List<Comunicacion> comunicaciones;
-  final Empleado empleado; // Nueva propiedad
+  final Empleado empleado;
 
   const ComunicacionesPage({Key? key, required this.comunicaciones, required this.empleado}) : super(key: key);
 
@@ -53,9 +53,8 @@ class ComunicacionesPage extends StatelessWidget {
                   titulo: titulo,
                   descripcion: descripcion,
                   fecha: DateTime.now(),
-                  autor: empleado.nombre + ' ' + empleado.apellidos, // Acceder a empleado.nombre y empleado.apellidos
+                  autor: empleado.nombre + ' ' + empleado.apellidos,
                 );
-                // Agregar la nueva comunicación a la lista
                 comunicaciones.add(comunicacion);
                 Navigator.pop(context);
               },
@@ -66,7 +65,6 @@ class ComunicacionesPage extends StatelessWidget {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +78,6 @@ class ComunicacionesPage extends StatelessWidget {
           Comunicacion comunicacion = comunicaciones[index];
           return GestureDetector(
             onTap: () {
-              // Detalles de la comunicación y usuario que la creó
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -145,9 +142,10 @@ class ComunicacionesPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4.0,
-                    offset: Offset(0, 2),
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
@@ -193,7 +191,6 @@ class ComunicacionesPage extends StatelessWidget {
           );
         },
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           agregarComunicacion(context);
@@ -203,4 +200,3 @@ class ComunicacionesPage extends StatelessWidget {
     );
   }
 }
-

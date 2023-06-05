@@ -18,6 +18,7 @@ class _PerfilState extends State<Perfil> {
   late TextEditingController _telefonoController;
   late TextEditingController _provinciaController;
   late TextEditingController _direccionController;
+  late TextEditingController _apodoController;
 
   late Empleado _empleado;
 
@@ -29,6 +30,7 @@ class _PerfilState extends State<Perfil> {
     _telefonoController = TextEditingController();
     _provinciaController = TextEditingController();
     _direccionController = TextEditingController();
+    _apodoController = TextEditingController();
 
     _empleado = Empleado(
       nombre: widget.user.displayName ?? '',
@@ -37,6 +39,7 @@ class _PerfilState extends State<Perfil> {
       telefono: '',
       provincia: '',
       direccion: '',
+      apodo: '',
     );
 
     _obtenerDatosUsuario();
@@ -55,6 +58,7 @@ class _PerfilState extends State<Perfil> {
         _empleado.editarTelefono(data['telefono']);
         _empleado.editarProvincia(data['provincia']);
         _empleado.editarDireccion(data['direccion']);
+        _empleado.editarApodo(data['apodo']);
 
       });
     }
@@ -68,18 +72,21 @@ class _PerfilState extends State<Perfil> {
     _empleado.editarTelefono(_telefonoController.text);
     _empleado.editarProvincia(_provinciaController.text);
     _empleado.editarDireccion(_direccionController.text);
+    _empleado.editarApodo(_apodoController.text);
 
     // Actualizar los controladores de texto con los nuevos valores
     _apellidosController.text = _empleado.apellidos;
     _telefonoController.text = _empleado.telefono;
     _provinciaController.text = _empleado.provincia;
     _direccionController.text = _empleado.direccion;
+    _apodoController.text = _empleado.apodo;
 
     await empleadoRef.update({
       'apellidos': _empleado.apellidos,
       'telefono': _empleado.telefono,
       'provincia': _empleado.provincia,
       'direccion': _empleado.direccion,
+      'apodo': _empleado.apodo,
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -128,6 +135,10 @@ class _PerfilState extends State<Perfil> {
             TextField(
               controller: _apellidosController,
               decoration: InputDecoration(labelText: 'Apellidos'),
+            ),
+            TextField(
+              controller: _apodoController,
+              decoration: InputDecoration(labelText: 'Apodo'),
             ),
             TextField(
               controller: _telefonoController,

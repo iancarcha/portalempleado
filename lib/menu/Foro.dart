@@ -25,7 +25,7 @@ class _ForoState extends State<Foro> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Arocival Foro',
+          'Foro',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20.0,
@@ -37,7 +37,10 @@ class _ForoState extends State<Foro> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: _messagesCollection.orderBy('timestamp').snapshots(),
+              stream: _messagesCollection
+                  .orderBy('timestamp')
+                  .where('deleted', isEqualTo: false)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final messages = snapshot.data!.docs;
@@ -160,8 +163,8 @@ class _ForoState extends State<Foro> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmacion'),
-          content: Text('Estas seguro que quieres borrar los mensajes?'),
+          title: Text('Confirmación'),
+          content: Text('¿Estás seguro de que quieres borrar tus mensajes?'),
           actions: [
             TextButton(
               child: Text('Cancelar'),
@@ -177,7 +180,7 @@ class _ForoState extends State<Foro> {
                     .get()
                     .then((querySnapshot) {
                   querySnapshot.docs.forEach((doc) {
-                    doc.reference.delete();
+                    doc.reference.update({'deleted': true});
                   });
                 });
                 Navigator.of(context).pop();

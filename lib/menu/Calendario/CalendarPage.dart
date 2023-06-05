@@ -209,7 +209,7 @@ class _CalendarPageState extends State<CalendarPage> {
             Navigator.pop(context);
           },
         ),
-        title: Text("Calendario - Arocival"),
+        title: Text("Calendario"),
         backgroundColor: Colors.orange,
       ),
       body: Column(
