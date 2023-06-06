@@ -26,7 +26,7 @@ class _OpcionesState extends State<Opciones> {
     if (user != null) {
       // Obtener el documento del usuario en la colección 'usuarios'
       DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('usuarios')
+          .collection('users')
           .doc(user.uid)
           .get();
 
@@ -35,7 +35,7 @@ class _OpcionesState extends State<Opciones> {
         Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
         String userRole = userData['rol'];
 
-        if (userRole == 'administrador') {
+        if (userRole == 'admin') {
           // El usuario tiene el rol de administrador
           return true;
         }
@@ -60,7 +60,6 @@ class _OpcionesState extends State<Opciones> {
         title: Text(
           'Opciones',
           style: TextStyle(color: Colors.white),
-
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
@@ -74,20 +73,10 @@ class _OpcionesState extends State<Opciones> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 20),
-            Text(
-              'Opciones',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
-              ),
-            ),
             SizedBox(height: 40),
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.orange),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.orange),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
@@ -115,8 +104,7 @@ class _OpcionesState extends State<Opciones> {
             if (esAdministrador) // Mostrar el botón solo si el usuario es administrador
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.blue),
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
@@ -141,9 +129,138 @@ class _OpcionesState extends State<Opciones> {
                   _mostrarCuadroDialogoCambioContrasena(context);
                 },
               ),
+            SizedBox(height: 16), // Añade un espacio vertical entre los botones
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.red),
+                  ),
+                ),
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                width: double.infinity,
+                child: Center(
+                  child: Text(
+                    'Recuperar Contraseña',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                _mostrarCuadroDialogoRecuperarContrasena(context);
+              },
+            ),
           ],
         ),
       ),
+    );
+  }
+
+
+  void _mostrarCuadroDialogoRecuperarContrasena(BuildContext context) {
+    final _auth = FirebaseAuth.instance;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController emailController = TextEditingController(); // Controlador para el campo de entrada de correo electrónico
+
+        return AlertDialog(
+          title: Text('Recuperar Contraseña'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Ingresa tu dirección de correo electrónico para recuperar tu contraseña.'),
+              SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  hintText: 'Correo electrónico',
+                ),
+              ),
+              SizedBox(height: 16),
+            ],
+          ),
+          actionsPadding: EdgeInsets.symmetric(vertical: 8), // Añade un espacio vertical entre el contenido y los botones
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            SizedBox(width: 16), // Añade un espacio horizontal entre los botones
+            TextButton(
+              child: Text('Enviar'),
+              onPressed: () async {
+                String email = emailController.text.trim();
+
+                if (email.isNotEmpty) {
+                  try {
+                    await _auth.sendPasswordResetEmail(email: email);
+                    Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+                    _mostrarMensajeExito(context);
+                  } catch (e) {
+                    // Manejar cualquier error al enviar el correo electrónico de recuperación de contraseña
+                    print('Error al enviar el correo electrónico de recuperación de contraseña: $e');
+                    _mostrarMensajeError(context, 'Error al enviar el correo electrónico de recuperación de contraseña');
+                  }
+                } else {
+                  _mostrarMensajeError(context, 'Ingresa tu dirección de correo electrónico');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _mostrarMensajeExito(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Éxito'),
+          content: Text('Se ha enviado un correo electrónico para recuperar tu contraseña.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _mostrarMensajeError(BuildContext context, String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(errorMessage),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

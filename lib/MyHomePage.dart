@@ -101,6 +101,99 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
+  void agregarComunicacion() async {
+    TextEditingController descripcionController = TextEditingController();
+    List<String> destinatarios = [];
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Añadir Comunicación"),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Descripción:"),
+              TextField(
+                controller: descripcionController,
+              ),
+              SizedBox(height: 8.0),
+              Text("Destinatarios:"),
+              DropdownButton<String>(
+                value: dropdownValue,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+                items: <String>['Perfil', 'Opción 1', 'Opción 2', 'Opción 3']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Obtener una referencia a la colección "comunicaciones"
+                CollectionReference comunicacionesCollection =
+                FirebaseFirestore.instance.collection('comunicaciones');
+
+                // Crear un nuevo documento con un ID automático
+                DocumentReference newComunicacionRef = comunicacionesCollection
+                    .doc();
+
+                // Obtener los destinatarios seleccionados
+                if (dropdownValue == 'Perfil') {
+                  // Si se selecciona "Perfil", se enviará la comunicación a todos los usuarios registrados
+                  QuerySnapshot usersSnapshot = await FirebaseFirestore.instance
+                      .collection('users').get();
+                  destinatarios =
+                      usersSnapshot.docs.map((doc) => doc.id).toList();
+                } else {
+                  // De lo contrario, se enviará la comunicación a los usuarios seleccionados
+                  destinatarios = [dropdownValue];
+                }
+
+                // Crear un mapa con los datos de la nueva comunicación
+                Map<String, dynamic> nuevaComunicacion = {
+                  'titulo': 'Título de la comunicación',
+                  'descripcion': descripcionController.text,
+                  'fecha': DateTime.now(),
+                  'autor': widget.user.email,
+                  'destinatarios': destinatarios,
+                };
+
+                // Guardar la nueva comunicación en Firestore
+                await newComunicacionRef.set(nuevaComunicacion);
+
+                // Cerrar el cuadro de diálogo
+                Navigator.pop(context);
+
+                // Mostrar un mensaje de éxito
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Comunicación creada exitosamente")),
+                );
+              },
+              child: Text('Agregar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,7 +236,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   onTap: () {
                     mostrarDetallesComunicacion(comunicacion);
                   },
-
                   child: Container(
                     padding: EdgeInsets.all(8.0),
                     margin: EdgeInsets.symmetric(
@@ -182,7 +274,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              DateFormat('dd/MM/yyyy').format(comunicacion.fecha),
+                              DateFormat('dd/MM/yyyy').format(
+                                  comunicacion.fecha),
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12.0,
@@ -204,34 +297,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
           ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () async {
-                // Obtener una referencia a la colección "comunicaciones"
-                CollectionReference comunicacionesCollection = FirebaseFirestore.instance.collection('comunicaciones');
-
-                // Crear un nuevo documento con un ID automático
-                DocumentReference newComunicacionRef = comunicacionesCollection.doc();
-
-                // Crear un mapa con los datos de la nueva comunicación
-                Map<String, dynamic> nuevaComunicacion = {
-                  'titulo': 'Título de la comunicación',
-                  'descripcion': 'Descripción de la comunicación',
-                  'fecha': DateTime.now(),
-                  'autor': 'Nombre del autor',
-                };
-
-                // Guardar la nueva comunicación en Firestore
-                await newComunicacionRef.set(nuevaComunicacion);
-
-                // va bien
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Comunicación creada exitosamente")),
-                );
-              },
-              child: Text("Añadir Comunicaciones"),
-            ),
-          ],
+          SizedBox(height: 20.0),
+          ElevatedButton(
+            onPressed: agregarComunicacion,
+            child: Text("Añadir Comunicación"),
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -246,9 +317,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 children: [
                   Image.asset(
                     'assets/logo.png',
-                    width: 100,
-                    height: 100,
-
+                    width: 50,
+                    height: 50,
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -258,10 +328,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       fontSize: 24,
                     ),
                   ),
-                  Icon(
-                    Icons.exit_to_app,
-                    color: Colors.white,
-                  ),
+
                 ],
               ),
             ),
@@ -276,7 +343,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Perfil(user: widget.user)),
+                  MaterialPageRoute(
+                      builder: (context) => Perfil(user: widget.user)),
                 );
               },
             ),
@@ -319,17 +387,17 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 ),
               ),
               /*onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => GestorDeProyectos()),
-                );
-              },*/
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => GestorDeProyectos()),
+              );
+            },*/
             ),
             ListTile(
-              leading: Icon(Icons.access_time_outlined, color: Color(0xffe06b2c)),
+              leading: Icon(
+                  Icons.access_time_outlined, color: Color(0xffe06b2c)),
               title: Text(
-                'Agenda',
+                'Horario',
                 style: TextStyle(
                   color: Colors.black,
                 ),
@@ -342,7 +410,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
             ListTile(
-              leading: Icon(Icons.calendar_today, color: Color(0xffe06b2c)),
+              leading: Icon(
+                  Icons.calendar_today_rounded, color: Color(0xffe06b2c)),
               title: Text(
                 'Calendario',
                 style: TextStyle(
@@ -357,9 +426,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
             ListTile(
-              leading: Icon(Icons.file_upload, color: Color(0xffe06b2c)),
+              leading: Icon(Icons.upload_file, color: Color(0xffe06b2c)),
               title: Text(
-                'Gestión documental',
+                'Subir Archivos',
                 style: TextStyle(
                   color: Colors.black,
                 ),
@@ -372,23 +441,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
             ),
             ListTile(
-              leading: Icon(Icons.verified_user, color: Color(0xffe06b2c)),
-              title: Text(
-                'Usuarios',
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UserRoleManagerPage()),
-
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.brightness_7, color: Color(0xffe06b2c)),
+              leading: Icon(Icons.settings, color: Color(0xffe06b2c)),
               title: Text(
                 'Opciones',
                 style: TextStyle(
@@ -399,14 +452,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Opciones()),
-
                 );
               },
             ),
           ],
         ),
       ),
-
     );
   }
-  }
+}
