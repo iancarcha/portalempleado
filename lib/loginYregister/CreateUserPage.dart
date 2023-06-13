@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:portalempleado/options/Rol.dart';
 
 class CreateUserPage extends StatefulWidget{
 
@@ -22,7 +21,7 @@ class _CreateUserState extends State<CreateUserPage> {
   void initState() {
     super.initState();
   }
-
+//contruye la interfaz de usuario
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +64,7 @@ class _CreateUserState extends State<CreateUserPage> {
       ),
     );
   }
-
+//contiene campos de estrada de correo y contraseña
   Widget formulario() {
     return Form(
       key: _formsKey,
@@ -79,7 +78,7 @@ class _CreateUserState extends State<CreateUserPage> {
     );
   }
 
-
+//construye los campos de entrada de correo electrónico
   Widget buildEmail() {
     return TextFormField(
       decoration: InputDecoration(
@@ -101,7 +100,7 @@ class _CreateUserState extends State<CreateUserPage> {
       },
     );
   }
-
+//construye los campos de entrada de la contraseña
   Widget buildPassword() {
     return TextFormField(
       decoration: InputDecoration(
@@ -123,7 +122,7 @@ class _CreateUserState extends State<CreateUserPage> {
       },
     );
   }
-
+//construye el botón de "Crear cuenta" que llama al método crearUsuario() cuando se presiona.
   Widget botonCrearUsuario() {
     return ElevatedButton(
       onPressed: () async {
@@ -191,6 +190,8 @@ class _CreateUserState extends State<CreateUserPage> {
     );
   }
 
+//utiliza la clase FirebaseAuth para crear un nuevo usuario utilizando el correo electrónico y la contraseña proporcionados.
+// Maneja posibles excepciones y muestra mensajes de error correspondientes.
   Future<UserCredential?> crearUsuario(String email, String password) async {
     try {
       final userCredential = await FirebaseAuth.instance

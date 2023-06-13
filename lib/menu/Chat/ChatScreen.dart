@@ -18,6 +18,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Establecer el stream de mensajes desde la colección correspondiente en Firestore
     _messageStream = FirebaseFirestore.instance
         .collection('chats')
         .doc(widget.user['userId'])
@@ -30,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final String text = _messageController.text.trim();
 
     if (text.isNotEmpty) {
+      // Guardar el mensaje en la colección correspondiente en Firestore
       FirebaseFirestore.instance
           .collection('chats')
           .doc(widget.user['userId'])
@@ -67,16 +70,20 @@ class _ChatScreenState extends State<ChatScreen> {
               stream: _messageStream,
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
+                // Comprobar si hay algún error en el snapshot
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 }
 
+                // Comprobar el estado de conexión del snapshot
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 }
 
+                // Obtener la lista de mensajes del snapshot
                 final messages = snapshot.data!.docs;
 
+                // Desplazarse automáticamente hacia el último mensaje recibido
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollController.animateTo(
                     _scrollController.position.maxScrollExtent,
@@ -85,6 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   );
                 });
 
+                // Construir una ListView para mostrar los mensajes
                 return ListView.builder(
                   controller: _scrollController,
                   reverse: true,
@@ -98,6 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       return Container();
                     }
 
+                    // Mostrar el mensaje en un ListTile
                     return ListTile(
                       title: Text(
                         message['text'] as String? ?? '',

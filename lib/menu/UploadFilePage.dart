@@ -1,10 +1,10 @@
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart';
-import 'package:http/http.dart' as http;
+import 'dart:io'; // Importar librería para trabajar con archivos
+import 'package:path_provider/path_provider.dart'; // Importar librería para obtener el directorio de almacenamiento
+import 'package:flutter/material.dart'; // Importar librería de Flutter para construir la interfaz de usuario
+import 'package:file_picker/file_picker.dart'; // Importar librería para seleccionar archivos
+import 'package:firebase_storage/firebase_storage.dart'; // Importar librería para interactuar con Firebase Storage
+import 'package:path/path.dart'; // Importar librería para manejar rutas de archivos
+import 'package:http/http.dart' as http; // Importar librería para realizar solicitudes HTTP
 
 class UploadFilePage extends StatefulWidget {
   @override
@@ -12,54 +12,55 @@ class UploadFilePage extends StatefulWidget {
 }
 
 class _UploadFilePageState extends State<UploadFilePage> {
-  late File _selectedFile = File('');
-  bool _isFileUploaded = false;
-  bool _isUploadFailed = false;
+  late File _selectedFile = File(''); // Variable que representa el archivo seleccionado
+  bool _isFileUploaded = false; // Variable para indicar si el archivo ha sido subido correctamente
+  bool _isUploadFailed = false; // Variable para indicar si ha ocurrido un error durante la subida del archivo
 
   // Seleccionar el archivo
   void _selectFile() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['png', 'pdf', 'jpeg', 'jpg'],
+      type: FileType.custom, // Tipo de archivo permitido
+      allowedExtensions: ['png', 'pdf', 'jpeg', 'jpg'], // Extensiones permitidas
     );
     if (result != null) {
       setState(() {
-        _selectedFile = File(result.files.single.path!);
+        _selectedFile = File(result.files.single.path!); // Guardar el archivo seleccionado en la variable
       });
     }
   }
 
-  // Funcion para cargar archivos
+  // Función para cargar archivos
   void _uploadFile() async {
     try {
-      if (_selectedFile.path != '') {
-        String fileName = basename(_selectedFile.path);
-        Reference storageRef = FirebaseStorage.instance.ref().child(fileName);
-        UploadTask uploadTask = storageRef.putFile(_selectedFile);
-        await uploadTask.whenComplete(() => null);
+      if (_selectedFile.path != '') { // Verificar que haya un archivo seleccionado
+        String fileName = basename(_selectedFile.path); // Obtener el nombre del archivo
+        Reference storageRef = FirebaseStorage.instance.ref().child(fileName); // Crear una referencia al archivo en Firebase Storage
+        UploadTask uploadTask = storageRef.putFile(_selectedFile); // Subir el archivo
+        await uploadTask.whenComplete(() => null); // Esperar a que se complete la subida
         setState(() {
-          _isFileUploaded = true;
-          _isUploadFailed = false;
+          _isFileUploaded = true; // Indicar que el archivo ha sido subido correctamente
+          _isUploadFailed = false; // Indicar que no ha ocurrido un error durante la subida
         });
       }
     } catch (e) {
-      print(e.toString());
+      print(e.toString()); // Imprimir el error en caso de que ocurra
       setState(() {
-        _isUploadFailed = true;
-        _isFileUploaded = false;
+        _isUploadFailed = true; // Indicar que ha ocurrido un error durante la subida
+        _isFileUploaded = false; // Indicar que el archivo no ha sido subido correctamente
       });
     }
   }
 
+  // Función para descargar el archivo
   void _downloadFile(BuildContext context) async {
-    if (_selectedFile.path != '') {
-      String fileName = basename(_selectedFile.path);
-      Reference storageRef = FirebaseStorage.instance.ref().child(fileName);
-      final url = await storageRef.getDownloadURL();
+    if (_selectedFile.path != '') { // Verificar que haya un archivo seleccionado
+      String fileName = basename(_selectedFile.path); // Obtener el nombre del archivo
+      Reference storageRef = FirebaseStorage.instance.ref().child(fileName); // Crear una referencia al archivo en Firebase Storage
+      final url = await storageRef.getDownloadURL(); // Obtener la URL de descarga del archivo
 
       // Realizar la solicitud HTTP para descargar el archivo
       var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) { // Verificar que la descarga sea exitosa
         // Guardar el archivo en el dispositivo
 
         // Obtener el directorio de almacenamiento externo

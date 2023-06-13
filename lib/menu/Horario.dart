@@ -13,6 +13,7 @@ class Horario extends StatefulWidget {
 class _HorarioState extends State<Horario> {
   final List<String> _diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
+  // Mapa para almacenar el horario
   Map<String, List<String>> _horario = {
     'Lunes': ['', '', '', '', '', '', '', '', '', '', '', ''],
     'Martes': ['', '', '', '', '', '', '', '', '', '', '', ''],
@@ -21,6 +22,7 @@ class _HorarioState extends State<Horario> {
     'Viernes': ['', '', '', '', '', '', '', '', '', '', '', ''],
   };
 
+  // Lista de controladores de texto para los campos de horario
   List<List<TextEditingController>> _controllers =
   List.generate(5, (_) => List.generate(12, (_) => TextEditingController()));
 
@@ -30,14 +32,16 @@ class _HorarioState extends State<Horario> {
     obtenerHorarioGuardado();
   }
 
+  // Método para obtener el horario guardado en SharedPreferences
   Future<void> obtenerHorarioGuardado() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String horarioGuardado = prefs.getString('horario') ?? '';
 
     if (horarioGuardado.isNotEmpty) {
       setState(() {
-        _horario = Map<String, List<String>>.from((jsonDecode(horarioGuardado) as Map).map((key, value) =>
-            MapEntry(key, List<String>.from(value))));
+        // Si hay un horario guardado, se carga en el mapa de horario y en los controladores de texto
+        _horario = Map<String, List<String>>.from(
+            (jsonDecode(horarioGuardado) as Map).map((key, value) => MapEntry(key, List<String>.from(value))));
         for (var i = 0; i < 5; i++) {
           for (var j = 0; j < 12; j++) {
             _controllers[i][j].text = _horario[_diasSemana[i]]![j];
@@ -49,12 +53,14 @@ class _HorarioState extends State<Horario> {
     }
   }
 
+  // Método para obtener el horario actual desde Firestore
   Future<void> obtenerHorarioActual() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference horarios = firestore.collection('horarios');
     DocumentSnapshot snapshot = await horarios.doc('horario_actual').get();
     if (snapshot.exists) {
       setState(() {
+        // Si hay un horario actual en Firestore, se carga en el mapa de horario y en los controladores de texto
         _horario = Map<String, List<String>>.from(snapshot.data() as Map);
         for (var i = 0; i < 5; i++) {
           for (var j = 0; j < 12; j++) {
@@ -65,6 +71,7 @@ class _HorarioState extends State<Horario> {
     }
   }
 
+  // Método para mostrar un cuadro de diálogo de confirmación antes de borrar el horario
   void borrarHorario() {
     showDialog(
       context: context,
@@ -92,6 +99,7 @@ class _HorarioState extends State<Horario> {
     );
   }
 
+  // Método para borrar el horario actual y limpiar los controladores de texto
   void ejecutarBorradoHorario() {
     setState(() {
       for (var i = 0; i < 5; i++) {
@@ -185,11 +193,13 @@ class _HorarioState extends State<Horario> {
     );
   }
 
+  // Método para guardar los cambios en el horario en Firestore y SharedPreferences
   Future<void> guardarCambios() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference horarios = firestore.collection('horarios');
     DocumentReference horarioActual = horarios.doc('horario_actual');
 
+    // Datos del horario a guardar
     Map<String, List<String>> datosHorario = {
       'Lunes': [
         _controllers[0][0].text,
@@ -279,8 +289,26 @@ class _HorarioState extends State<Horario> {
     });
   }
 
+  // Método para guardar el horario en SharedPreferences
   Future<void> guardarHorarioEnSharedPreferences(String horario) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('horario', horario);
+    await prefs.setString('horario', horario);
+  }
+}
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Horario App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Horario(),
+    );
   }
 }

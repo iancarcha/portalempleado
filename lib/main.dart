@@ -4,9 +4,9 @@ import 'package:portalempleado/loginYregister/LoginPage.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(); // Inicializar Firebase
 
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -14,10 +14,9 @@ class MyApp extends StatefulWidget {
   State createState() {
     return _MyAppState();
   }
-
 }
-class _MyAppState extends State<MyApp>{
 
+class _MyAppState extends State<MyApp> {
   @override
   void initState(){
     super.initState();
@@ -26,9 +25,8 @@ class _MyAppState extends State<MyApp>{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Portal del Empleado",
-      home: LoginPage(),
+      title: "Portal del Empleado", // Título de la aplicación
+      home: LoginPage(), // Página de inicio: LoginPage
     );
-
   }
 }

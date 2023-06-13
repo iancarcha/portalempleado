@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:portalempleado/menu/Calendario/InfoCalendario.dart';
+import 'package:portalempleado/menu/Calendario/InfoCalendario.dart'; // Importar clase InfoCalendario
 import 'package:table_calendar/table_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,21 +13,21 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  late Map<DateTime, String> _holidays;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-  Map<DateTime, String> _selectedDates = {};
-  Set<DateTime> _selectedDatesToDelete = {};
+  late Map<DateTime, String> _holidays; // Mapa de fechas festivas
+  CalendarFormat _calendarFormat = CalendarFormat.month; // Formato del calendario
+  DateTime _focusedDay = DateTime.now(); // Día en foco
+  DateTime? _selectedDay; // Día seleccionado
+  Map<DateTime, String> _selectedDates = {}; // Mapa de fechas seleccionadas
+  Set<DateTime> _selectedDatesToDelete = {}; // Conjunto de fechas seleccionadas para eliminar
 
-  final TextEditingController _labelController = TextEditingController();
+  final TextEditingController _labelController = TextEditingController(); // Controlador de texto para la etiqueta
 
   @override
   void initState() {
     super.initState();
-    _holidays = InfoCalendario.getDiasFestivos();
-    initializeDateFormatting('es_ES', null);
-    loadSelectedDates();
+    _holidays = InfoCalendario.getDiasFestivos(); // Obtener las fechas festivas del año del objeto InfoCalendario
+    initializeDateFormatting('es_ES', null); // Inicializar la configuración regional para el formato de fechas en español
+    loadSelectedDates(); // Cargar las fechas seleccionadas guardadas
   }
 
   Future<void> saveSelectedDates() async {

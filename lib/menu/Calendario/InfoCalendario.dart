@@ -1,4 +1,5 @@
 class InfoCalendario {
+  // Método estático para obtener un mapa de los días del calendario junto con su descripción
   static Map<DateTime, String> getDias() {
     return {
       DateTime(2023, 1, 1): "Año Nuevo",
@@ -19,8 +20,9 @@ class InfoCalendario {
     };
   }
 
+  // Método estático para obtener un mapa de los días festivos del calendario junto con su descripción
   static Map<DateTime, String> getDiasFestivos() {
-    // Agregar mas dias festivos si hace falta
+    // Agregar más días festivos si es necesario
     return {
       DateTime(2023, 1, 1): "Año Nuevo",
       DateTime(2023, 1, 6): "Epifanía del Señor",

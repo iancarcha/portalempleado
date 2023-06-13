@@ -10,6 +10,7 @@ class Opciones extends StatefulWidget {
 class _OpcionesState extends State<Opciones> {
   bool esAdministrador = false; // Variable para almacenar si el usuario es administrador
 
+  //Verifica si el usuario actual tiene el rol de administrador
   Future<void> verificarAdministrador() async {
     // Obtener el resultado de la verificación
     bool esAdmin = await obtenerAdministrador();
@@ -163,7 +164,8 @@ class _OpcionesState extends State<Opciones> {
     );
   }
 
-
+//Muestra un cuadro de diálogo para que el usuario ingrese su dirección de correo electrónico
+// y envía un correo electrónico de restablecimiento de contraseña utilizando FirebaseAuth.sendPasswordResetEmail.
   void _mostrarCuadroDialogoRecuperarContrasena(BuildContext context) {
     final _auth = FirebaseAuth.instance;
 
@@ -224,6 +226,7 @@ class _OpcionesState extends State<Opciones> {
     );
   }
 
+  //Muestra un cuadro de diálogo con un mensaje de éxito después de enviar el correo electrónico de restablecimiento de contraseña.
   void _mostrarMensajeExito(BuildContext context) {
     showDialog(
       context: context,
@@ -244,6 +247,7 @@ class _OpcionesState extends State<Opciones> {
     );
   }
 
+  // Muestra un cuadro de diálogo con un mensaje de error personalizado.
   void _mostrarMensajeError(BuildContext context, String errorMessage) {
     showDialog(
       context: context,
@@ -264,7 +268,8 @@ class _OpcionesState extends State<Opciones> {
     );
   }
 
-
+//Muestra un cuadro de diálogo donde el usuario puede ingresar una nueva contraseña y confirmarla.
+// Luego, llama a _cambiarContrasenaRoles para realizar la lógica de cambio de contraseña.
   void _mostrarCuadroDialogoCambioContrasena(BuildContext context) {
     String nuevaContrasena = '';
     String confirmarContrasena = '';
@@ -331,6 +336,7 @@ class _OpcionesState extends State<Opciones> {
     );
   }
 
+  //Actualiza la contraseña de roles almacenada en Firestore en la colección 'configuracion' y el documento 'contrasena_roles'.
   void _cambiarContrasenaRoles(String nuevaContrasena) {
     FirebaseFirestore.instance
         .collection('configuracion')
@@ -377,7 +383,7 @@ class _OpcionesState extends State<Opciones> {
   }
 
 
-  void _mostrarDialogoCambioRol(BuildContext context) {
+  /*void _mostrarDialogoCambioRol(BuildContext context) {
     String selectedRole = ''; // Variable para almacenar el rol seleccionado
     String password = ''; // Variable para almacenar la contraseña ingresada
 
@@ -438,9 +444,9 @@ class _OpcionesState extends State<Opciones> {
         );
       },
     );
-  }
+  }*/
 
-  void _cambiarRol(BuildContext context, String selectedRole, String password) {
+  /*void _cambiarRol(BuildContext context, String selectedRole, String password) {
     FirebaseFirestore.instance
         .collection('configuracion')
         .doc('contrasena_roles')
@@ -489,8 +495,9 @@ class _OpcionesState extends State<Opciones> {
       );
       // Manejar el error de obtener la contraseña de Roles
     });
-  }
+  }*/
 
+  //Muestra un cuadro de diálogo donde el usuario puede ingresar una nueva contraseña
   void _mostrarCuadroDialogo(BuildContext context) {
     String nuevaContrasena = '';
 

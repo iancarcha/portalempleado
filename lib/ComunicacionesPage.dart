@@ -4,15 +4,17 @@ import 'package:portalempleado/Comunicacion.dart';
 import 'package:portalempleado/menu/Empleado.dart';
 
 class ComunicacionesPage extends StatelessWidget {
-  final List<Comunicacion> comunicaciones;
-  final Empleado empleado;
+  final List<Comunicacion> comunicaciones; // Lista de comunicaciones
+  final Empleado empleado; // Instancia de la clase Empleado
 
   const ComunicacionesPage({Key? key, required this.comunicaciones, required this.empleado}) : super(key: key);
 
+  // Función para agregar una comunicación
   void agregarComunicacion(BuildContext context) {
-    String titulo = '';
-    String descripcion = '';
+    String titulo = ''; // Variable para almacenar el título ingresado
+    String descripcion = ''; // Variable para almacenar la descripción ingresada
 
+    // Mostrar un cuadro de diálogo para ingresar los detalles de la comunicación
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -26,7 +28,7 @@ class ComunicacionesPage extends StatelessWidget {
                   labelText: 'Título',
                 ),
                 onChanged: (value) {
-                  titulo = value;
+                  titulo = value; // Almacenar el valor del título ingresado
                 },
               ),
               TextField(
@@ -34,7 +36,7 @@ class ComunicacionesPage extends StatelessWidget {
                   labelText: 'Descripción',
                 ),
                 onChanged: (value) {
-                  descripcion = value;
+                  descripcion = value; // Almacenar el valor de la descripción ingresada
                 },
               ),
             ],
@@ -42,12 +44,13 @@ class ComunicacionesPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Cerrar el cuadro de diálogo sin agregar la comunicación
               },
               child: Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
+                // Crear una nueva instancia de Comunicacion con los valores ingresados
                 Comunicacion comunicacion = Comunicacion(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
                   titulo: titulo,
@@ -55,8 +58,8 @@ class ComunicacionesPage extends StatelessWidget {
                   fecha: DateTime.now(),
                   autor: empleado.nombre + ' ' + empleado.apellidos,
                 );
-                comunicaciones.add(comunicacion);
-                Navigator.pop(context);
+                comunicaciones.add(comunicacion); // Agregar la comunicación a la lista
+                Navigator.pop(context); // Cerrar el cuadro de diálogo
               },
               child: Text('Agregar'),
             ),
@@ -75,9 +78,10 @@ class ComunicacionesPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: comunicaciones.length,
         itemBuilder: (BuildContext context, int index) {
-          Comunicacion comunicacion = comunicaciones[index];
+          Comunicacion comunicacion = comunicaciones[index]; // Obtener la comunicación en el índice actual
           return GestureDetector(
             onTap: () {
+              // Mostrar un cuadro de diálogo con los detalles de la comunicación al hacer clic en ella
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -122,7 +126,7 @@ class ComunicacionesPage extends StatelessWidget {
                     actions: [
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context); // Cerrar el cuadro de diálogo
                         },
                         child: Text('Cerrar'),
                       ),
@@ -193,7 +197,7 @@ class ComunicacionesPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          agregarComunicacion(context);
+          agregarComunicacion(context); // Invocar la función para agregar una comunicación
         },
         child: Icon(Icons.add),
       ),

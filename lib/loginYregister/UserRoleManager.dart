@@ -10,26 +10,32 @@ class UserRoleManagerPage extends StatefulWidget {
 class _UserRoleManagerPageState extends State<UserRoleManagerPage> {
   final CollectionReference _usersCollection =
   FirebaseFirestore.instance.collection('roles');
+  // almacena el rol del usuario actual.
   String currentUserRole = '';
 
+  //actualiza el rol de un usuario en Cloud Firestore. Recibe el ID del usuario
+  // y el nuevo rol como parámetros y utiliza DocumentReference y el método update() para realizar la actualización.
   Future<void> updateUserRole(String userId, String newRole) async {
     DocumentReference userRef = _usersCollection.doc(userId);
 
     await userRef.update({'rol': newRole});
   }
 
+  //busca y asigna el rol del usuario actual utilizando FirebaseAuth y FirebaseFirestore.
+  // Obtiene el ID del usuario actual y luego realiza una consulta a Cloud Firestore para obtener el documento correspondiente.
+  // Luego extrae el campo 'rol' del documento y lo asigna a la variable currentUserRole.
   Future<void> fetchCurrentUserRole() async {
     try {
 
       String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-      // Get the document snapshot of the current user from the 'users' collection
+
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('roles')
           .doc(currentUserId)
           .get();
 
-      // Extract the 'role' field from the document data
+
       String? rol = (userSnapshot.data() as Map<String, dynamic>)['rol'];
 
 
@@ -42,7 +48,7 @@ class _UserRoleManagerPageState extends State<UserRoleManagerPage> {
     }
   }
 
-
+//Verifica si hay un usuario autenticado y, si es así, llama al método fetchCurrentUserRole() para obtener y asignar el rol del usuario actual.
   @override
   void initState() {
     super.initState();
@@ -59,6 +65,8 @@ class _UserRoleManagerPageState extends State<UserRoleManagerPage> {
         title: Text('Lista de Usuarios'),
         backgroundColor: Colors.orange,
       ),
+
+      //Este widget se utiliza para escuchar los cambios en la colección de roles de usuario en Cloud Firestore
       body: StreamBuilder<QuerySnapshot>(
         stream: _usersCollection.snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

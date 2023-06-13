@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:portalempleado/loginYregister/CreateUserPage.dart';
 import 'package:portalempleado/MyHomePage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   final User? user;
@@ -26,7 +25,7 @@ class _LoginState extends State<LoginPage> {
   void initState() {
     super.initState();
   }
-
+//Este método construye la interfaz de usuario de la página utilizando widgets de Flutter.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +75,7 @@ class _LoginState extends State<LoginPage> {
       ),
     );
   }
-
+// construye un botón "¿No tienes cuenta? Regístrate" que redirige al usuario a la página de creación de usuarios cuando se presiona.
   Widget nuevousuario() {
     return TextButton(
       onPressed: () {
@@ -91,7 +90,7 @@ class _LoginState extends State<LoginPage> {
       ),
     );
   }
-
+// retorna un widget Form que contiene los campos de entrada de correo electrónico y contraseña.
   Widget formulario() {
     return Form(
       key: _formsKey,
@@ -104,7 +103,7 @@ class _LoginState extends State<LoginPage> {
       ),
     );
   }
-
+//construye los campos de entrada de correo electrónico
   Widget buildEmail() {
     return TextFormField(
       decoration: InputDecoration(
@@ -127,7 +126,7 @@ class _LoginState extends State<LoginPage> {
       },
     );
   }
-
+//construye los campos de entrada de la contraseña
   Widget buildPassword() {
     return TextFormField(
       decoration: InputDecoration(
@@ -151,6 +150,8 @@ class _LoginState extends State<LoginPage> {
     );
   }
 
+  // construye el botón "Ingresar" que llama al método login() cuando se presiona.
+  // También muestra mensajes de error correspondientes en caso de que ocurra un error durante el inicio de sesión.
   Widget botonLogin() {
     return Container(
       width: double.infinity,
@@ -201,7 +202,8 @@ class _LoginState extends State<LoginPage> {
   }
 
 
-
+// Este método utiliza la clase FirebaseAuth para autenticar al usuario utilizando el correo electrónico y la contraseña proporcionados.
+// Maneja posibles excepciones y muestra mensajes de error correspondientes.
   Future<UserCredential?> login(String email, String password) async {
     try {
       UserCredential userCredential =

@@ -12,8 +12,6 @@ import 'package:portalempleado/menu/Perfil.dart';
 import 'package:portalempleado/menu/UploadFilePage.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:portalempleado/menu/GestorDeProyectos.dart';
-import 'package:portalempleado/loginYregister/UserRoleManager.dart';
 
 class MyHomePage extends StatefulWidget {
   final User user;
@@ -378,21 +376,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 );
               },
             ),
-            ListTile(
-              leading: Icon(Icons.paste_rounded, color: Color(0xffe06b2c)),
-              title: Text(
-                'Gestión de Proyectos',
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              /*onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => GestorDeProyectos()),
-              );
-            },*/
-            ),
+
             ListTile(
               leading: Icon(
                   Icons.access_time_outlined, color: Color(0xffe06b2c)),

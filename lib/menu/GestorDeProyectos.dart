@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Clase que representa un proyecto
 class Proyecto {
   final String nombre;
   final String descripcion;
@@ -9,6 +10,7 @@ class Proyecto {
 
   Proyecto(this.nombre, this.descripcion, this.tareas);
 
+  // Convierte el proyecto a un mapa para facilitar su serialización
   Map<String, dynamic> toMap() {
     return {
       'nombre': nombre,
@@ -17,6 +19,7 @@ class Proyecto {
     };
   }
 
+  // Constructor de la clase que crea un proyecto a partir de un mapa
   factory Proyecto.fromJson(Map<String, dynamic> json) {
     List<Tarea> tareas = [];
     for (var tareaJson in json['tareas']) {
@@ -25,11 +28,13 @@ class Proyecto {
     return Proyecto(json['nombre'], json['descripcion'], tareas);
   }
 
+  // Agrega una nueva tarea al proyecto
   void addTarea(String nombre, String descripcion, DateTime fechaLimite, String responsable) {
     tareas.add(Tarea(nombre, descripcion, fechaLimite, responsable));
   }
 }
 
+// Clase que representa una tarea
 class Tarea {
   final String nombre;
   final String descripcion;
@@ -38,6 +43,7 @@ class Tarea {
 
   Tarea(this.nombre, this.descripcion, this.fechaLimite, this.responsable);
 
+  // Convierte la tarea a un mapa para facilitar su serialización
   Map<String, dynamic> toMap() {
     return {
       'nombre': nombre,
@@ -47,6 +53,7 @@ class Tarea {
     };
   }
 
+  // Constructor de la clase que crea una tarea a partir de un mapa
   factory Tarea.fromJson(Map<String, dynamic> json) {
     return Tarea(
       json['nombre'],
@@ -57,6 +64,7 @@ class Tarea {
   }
 }
 
+// Widget StatefulWidget que muestra una lista de proyectos
 class ListaProyectos extends StatefulWidget {
   const ListaProyectos({Key? key}) : super(key: key);
 
@@ -83,6 +91,7 @@ class _ListaProyectosState extends State<ListaProyectos> {
     super.dispose();
   }
 
+  // Carga los proyectos guardados desde SharedPreferences al iniciar la aplicación
   void _cargarProyectos() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String proyectosString = prefs.getString('proyectos') ?? '';
@@ -93,6 +102,7 @@ class _ListaProyectosState extends State<ListaProyectos> {
     });
   }
 
+  // Guarda los proyectos en SharedPreferences
   void _guardarProyectos() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<dynamic> proyectosJson = _proyectos.map((proyecto) => proyecto.toMap()).toList();
@@ -100,12 +110,14 @@ class _ListaProyectosState extends State<ListaProyectos> {
     await prefs.setString('proyectos', proyectosString);
   }
 
+  // Activa el modo de agregar un nuevo proyecto
   void _agregarProyecto() {
     setState(() {
       _agregandoProyecto = true;
     });
   }
 
+  // Cancela el modo de agregar un nuevo proyecto
   void _cancelarAgregar() {
     setState(() {
       _agregandoProyecto = false;
@@ -113,6 +125,7 @@ class _ListaProyectosState extends State<ListaProyectos> {
     });
   }
 
+  // Guarda un nuevo proyecto en la lista
   void _guardarProyecto() {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -125,6 +138,7 @@ class _ListaProyectosState extends State<ListaProyectos> {
     }
   }
 
+  // Elimina un proyecto de la lista
   void _eliminarProyecto(int index) {
     setState(() {
       _proyectos.removeAt(index);

@@ -51,8 +51,7 @@ class _ForoState extends State<Foro> {
                       messages[index].data() as Map<String, dynamic>;
                       final sender = message['sender'];
                       final text = message['text'];
-                      final timestamp =
-                      message['timestamp'] as Timestamp;
+                      final timestamp = message['timestamp'] as Timestamp;
 
                       final dateTime = timestamp.toDate();
                       final dateFormat = DateFormat('dd/MM/yyyy');
@@ -145,6 +144,7 @@ class _ForoState extends State<Foro> {
     );
   }
 
+  // Envia un nuevo mensaje al Firestore
   void _sendMessage() {
     final text = _textEditingController.text.trim();
     if (text.isNotEmpty) {
@@ -158,6 +158,7 @@ class _ForoState extends State<Foro> {
     }
   }
 
+  // Muestra un diálogo de confirmación para borrar mensajes
   void _deleteMessages() {
     showDialog(
       context: context,
